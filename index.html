@@ -30,14 +30,31 @@
     .page{max-width:1200px;margin:0 auto;padding:28px 20px 40px;}
     .hero{
       background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
-      color:#fff;border-radius:30px;box-shadow:var(--shadow);
-      padding:28px 30px;position:relative;overflow:hidden;margin-bottom:24px;
+      color:#fff;
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:28px 30px;
+      position:relative;
+      overflow:hidden;
+      margin-bottom:24px;
     }
     .hero::after{
-      content:"";position:absolute;right:-60px;top:-60px;width:210px;height:210px;
-      border-radius:50%;background:rgba(176,28,46,0.18);
+      content:"";
+      position:absolute;
+      right:-60px;
+      top:-60px;
+      width:210px;
+      height:210px;
+      border-radius:50%;
+      background:rgba(176,28,46,0.18);
     }
-    .hero-top{display:flex;align-items:center;gap:18px;position:relative;z-index:1;}
+    .hero-top{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      position:relative;
+      z-index:1;
+    }
     .logo-wrap{
       width:110px;
       min-width:110px;
@@ -57,83 +74,278 @@
       object-fit:contain;
       display:block;
     }
-    .hero-copy h1{margin:0 0 8px;font-size:36px;line-height:1.05;}
-    .hero-copy p{margin:0;color:#d1d5db;line-height:1.6;max-width:760px;}
-    .main-grid{display:grid;grid-template-columns:1fr;gap:24px;}
-    .card{
-      background:#fff;border:1px solid var(--kw-border);border-radius:var(--radius-xl);
-      box-shadow:var(--shadow);overflow:hidden;
+    .hero-copy h1{
+      margin:0 0 8px;
+      font-size:36px;
+      line-height:1.05;
     }
-    .card-head{padding:20px 22px;border-bottom:1px solid var(--kw-border);background:#fff;}
-    .card-head h2{margin:0;font-size:21px;color:var(--kw-charcoal);}
+    .hero-copy p{
+      margin:0;
+      color:#d1d5db;
+      line-height:1.6;
+      max-width:760px;
+    }
+    .main-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:24px;
+    }
+    .card{
+      background:#fff;
+      border:1px solid var(--kw-border);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card-head{
+      padding:20px 22px;
+      border-bottom:1px solid var(--kw-border);
+      background:#fff;
+    }
+    .card-head h2{
+      margin:0;
+      font-size:21px;
+      color:var(--kw-charcoal);
+    }
     .card-body{padding:22px;}
-    .guide{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
-    .guide-item{border:1px solid var(--kw-border);border-radius:16px;background:#fafafa;padding:14px 16px;}
-    .guide-item strong{display:block;margin-bottom:5px;color:var(--kw-red);font-size:14px;}
-    .guide-item span{font-size:13px;line-height:1.5;color:#4b5563;}
-    .grid-login{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-    .grid-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
-    .field{display:flex;flex-direction:column;gap:6px;}
-    .field label{font-size:13px;font-weight:700;color:var(--kw-charcoal-2);}
+    .guide{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+    .guide-item{
+      border:1px solid var(--kw-border);
+      border-radius:16px;
+      background:#fafafa;
+      padding:14px 16px;
+    }
+    .guide-item strong{
+      display:block;
+      margin-bottom:5px;
+      color:var(--kw-red);
+      font-size:14px;
+    }
+    .guide-item span{
+      font-size:13px;
+      line-height:1.5;
+      color:#4b5563;
+    }
+    .grid-login{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+    .grid-form{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .field label{
+      font-size:13px;
+      font-weight:700;
+      color:var(--kw-charcoal-2);
+    }
     .field input,.field select{
-      width:100%;height:48px;border:1px solid var(--kw-border);border-radius:12px;
-      padding:0 14px;font-size:14px;outline:none;background:#fff;
+      width:100%;
+      height:48px;
+      border:1px solid var(--kw-border);
+      border-radius:12px;
+      padding:0 14px;
+      font-size:14px;
+      outline:none;
+      background:#fff;
     }
     .field input:focus,.field select:focus{
-      border-color:var(--kw-red);box-shadow:0 0 0 3px rgba(176,28,46,0.12);
+      border-color:var(--kw-red);
+      box-shadow:0 0 0 3px rgba(176,28,46,0.12);
     }
-    .field input[disabled]{background:#f9fafb;color:#6b7280;}
-    .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px;flex-wrap:wrap;}
+    .field input[disabled]{
+      background:#f9fafb;
+      color:#6b7280;
+    }
+    .actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:12px;
+      margin-top:20px;
+      flex-wrap:wrap;
+    }
     .btn{
-      border:none;border-radius:12px;height:46px;padding:0 18px;font-size:14px;
-      font-weight:700;cursor:pointer;transition:.2s ease;
+      border:none;
+      border-radius:12px;
+      height:46px;
+      padding:0 18px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
     }
-    .btn-primary{background:var(--kw-red);color:#fff;}
-    .btn-primary:hover{background:var(--kw-red-dark);}
-    .btn-secondary{background:#e5e7eb;color:#111827;}
-    .pill-row{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;}
+    .btn-primary{
+      background:var(--kw-red);
+      color:#fff;
+    }
+    .btn-primary:hover{
+      background:var(--kw-red-dark);
+    }
+    .btn-secondary{
+      background:#e5e7eb;
+      color:#111827;
+    }
+    .pill-row{
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
     .pill{
-      display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;
-      background:var(--kw-charcoal);color:#fff;font-size:13px;font-weight:700;
+      display:inline-flex;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:var(--kw-charcoal);
+      color:#fff;
+      font-size:13px;
+      font-weight:700;
     }
-    .pill.light{background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;}
-    .note{margin-top:10px;font-size:12px;color:#6b7280;line-height:1.5;}
+    .pill.light{
+      background:#f3f4f6;
+      color:#374151;
+      border:1px solid #e5e7eb;
+    }
+    .note{
+      margin-top:10px;
+      font-size:12px;
+      color:#6b7280;
+      line-height:1.5;
+    }
     .status{
-      margin-top:18px;padding:14px 16px;border-radius:14px;display:none;
-      font-size:14px;font-weight:700;
+      margin-top:18px;
+      padding:14px 16px;
+      border-radius:14px;
+      display:none;
+      font-size:14px;
+      font-weight:700;
     }
-    .status.ok{display:block;background:#ecfdf3;color:var(--kw-success);border:1px solid #bbf7d0;}
-    .status.err{display:block;background:#fef2f2;color:var(--kw-error);border:1px solid #fecaca;}
+    .status.ok{
+      display:block;
+      background:#ecfdf3;
+      color:var(--kw-success);
+      border:1px solid #bbf7d0;
+    }
+    .status.err{
+      display:block;
+      background:#fef2f2;
+      color:var(--kw-error);
+      border:1px solid #fecaca;
+    }
     .table-wrap{
-      overflow:auto;border:1px solid var(--kw-border);border-radius:16px;background:#fff;margin-top:16px;
+      overflow:auto;
+      border:1px solid var(--kw-border);
+      border-radius:16px;
+      background:#fff;
+      margin-top:16px;
     }
-    table{width:100%;border-collapse:collapse;min-width:760px;}
-    th{background:var(--kw-charcoal);color:#fff;text-align:left;padding:12px;font-size:13px;white-space:nowrap;}
-    td{border-bottom:1px solid var(--kw-border);padding:10px 12px;font-size:14px;vertical-align:middle;}
-    tr:nth-child(even) td{background:#fcfcfd;}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+    }
+    table.monday-mode{
+      min-width:520px;
+    }
+    th{
+      background:var(--kw-charcoal);
+      color:#fff;
+      text-align:left;
+      padding:12px;
+      font-size:13px;
+      white-space:nowrap;
+    }
+    td{
+      border-bottom:1px solid var(--kw-border);
+      padding:10px 12px;
+      font-size:14px;
+      vertical-align:middle;
+    }
+    tr:nth-child(even) td{
+      background:#fcfcfd;
+    }
     .num{
-      width:110px;height:40px;border:1px solid var(--kw-border);border-radius:10px;
-      padding:0 10px;text-align:center;font-size:14px;
+      width:110px;
+      height:40px;
+      border:1px solid var(--kw-border);
+      border-radius:10px;
+      padding:0 10px;
+      text-align:center;
+      font-size:14px;
     }
-    .hidden{display:none !important;}
+    .hidden{
+      display:none !important;
+    }
     .overlay{
-      position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;
-      justify-content:center;z-index:9999;padding:20px;
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      padding:20px;
     }
-    .overlay.show{display:flex;}
+    .overlay.show{
+      display:flex;
+    }
     .modal{
-      width:100%;max-width:460px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.22);
-      overflow:hidden;border:1px solid #e5e7eb;
+      width:100%;
+      max-width:460px;
+      background:#fff;
+      border-radius:22px;
+      box-shadow:0 24px 60px rgba(0,0,0,.22);
+      overflow:hidden;
+      border:1px solid #e5e7eb;
     }
-    .modal-head{background:linear-gradient(135deg,#1f2937 0%, #111827 100%);color:#fff;padding:20px 24px;}
-    .modal-head h3{margin:0;font-size:22px;}
-    .modal-body{padding:24px;color:#1f2937;line-height:1.6;}
-    .modal-actions{display:flex;justify-content:flex-end;padding:0 24px 24px;}
+    .modal-head{
+      background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
+      color:#fff;
+      padding:20px 24px;
+    }
+    .modal-head h3{
+      margin:0;
+      font-size:22px;
+    }
+    .modal-body{
+      padding:24px;
+      color:#1f2937;
+      line-height:1.6;
+    }
+    .modal-actions{
+      display:flex;
+      justify-content:flex-end;
+      padding:0 24px 24px;
+    }
     .modal-btn{
-      border:none;border-radius:12px;height:44px;padding:0 18px;font-size:14px;
-      font-weight:700;cursor:pointer;background:var(--kw-red);color:#fff;
+      border:none;
+      border-radius:12px;
+      height:44px;
+      padding:0 18px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      background:var(--kw-red);
+      color:#fff;
     }
-    .footer-note{text-align:center;font-size:12px;color:#6b7280;margin-top:10px;}
+    .footer-note{
+      text-align:center;
+      font-size:12px;
+      color:#6b7280;
+      margin-top:10px;
+    }
+
     @media (max-width: 980px){
       .guide{grid-template-columns:1fr 1fr}
       .grid-login{grid-template-columns:1fr}
@@ -141,6 +353,7 @@
       .hero-top{flex-direction:column;align-items:flex-start}
       .logo-wrap{width:96px;height:96px;min-width:96px}
     }
+
     @media (max-width: 640px){
       .guide{grid-template-columns:1fr}
       .hero-copy h1{font-size:30px}
@@ -230,16 +443,16 @@
           </div>
 
           <div class="note">
-            Wednesday and Friday automatically pull earlier values from the same week where available.
+            Monday shows goal fields only. Wednesday and Friday show both goal and actual fields.
           </div>
 
           <div class="table-wrap">
-            <table>
+            <table id="submissionTable">
               <thead>
                 <tr>
                   <th>Activity</th>
                   <th>Goal</th>
-                  <th>Actual</th>
+                  <th id="actualHeader">Actual</th>
                 </tr>
               </thead>
               <tbody id="activityBody"></tbody>
@@ -307,6 +520,27 @@
       btn.style.opacity = loading ? "0.75" : "1";
     }
 
+    function showActualColumn() {
+      document.getElementById("actualHeader").classList.remove("hidden");
+      document.querySelectorAll(".actual-cell").forEach(el => el.classList.remove("hidden"));
+      document.getElementById("submissionTable").classList.remove("monday-mode");
+    }
+
+    function hideActualColumn() {
+      document.getElementById("actualHeader").classList.add("hidden");
+      document.querySelectorAll(".actual-cell").forEach(el => el.classList.add("hidden"));
+      document.getElementById("submissionTable").classList.add("monday-mode");
+    }
+
+    function updateColumnVisibility() {
+      const submissionType = document.getElementById("submissionType").value;
+      if (submissionType === "Monday Goals") {
+        hideActualColumn();
+      } else {
+        showActualColumn();
+      }
+    }
+
     function renderActivityRows() {
       const body = document.getElementById("activityBody");
       body.innerHTML = "";
@@ -315,11 +549,17 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${activity.activityName}</td>
-          <td><input class="num" type="number" min="0" step="1" id="goal_${activity.activityId}" value="0"></td>
-          <td><input class="num" type="number" min="0" step="1" id="actual_${activity.activityId}" value="0"></td>
+          <td>
+            <input class="num" type="number" min="0" step="1" id="goal_${activity.activityId}" value="0">
+          </td>
+          <td class="actual-cell">
+            <input class="num" type="number" min="0" step="1" id="actual_${activity.activityId}" value="0">
+          </td>
         `;
         body.appendChild(tr);
       });
+
+      updateColumnVisibility();
     }
 
     function applyPrefill(data) {
@@ -346,6 +586,8 @@
       const prefillPill = document.getElementById("prefillPill");
       prefillPill.textContent = pillText;
       prefillPill.classList.remove("hidden");
+
+      updateColumnVisibility();
     }
 
     async function refreshPrefill() {
@@ -387,6 +629,8 @@
       document.getElementById("loginSurname").value = "";
       document.getElementById("activityBody").innerHTML = "";
       document.getElementById("prefillPill").classList.add("hidden");
+      document.getElementById("actualHeader").classList.remove("hidden");
+      document.getElementById("submissionTable").classList.remove("monday-mode");
       setStatus("loginStatus", "", "");
       setStatus("formStatus", "", "");
       closeSuccessModal();
@@ -459,9 +703,12 @@
 
       const values = {};
       currentActivities.forEach(activity => {
+        const goalEl = document.getElementById(`goal_${activity.activityId}`);
+        const actualEl = document.getElementById(`actual_${activity.activityId}`);
+
         values[activity.activityId] = {
-          goal: Number(document.getElementById(`goal_${activity.activityId}`).value || 0),
-          actual: Number(document.getElementById(`actual_${activity.activityId}`).value || 0)
+          goal: Number(goalEl ? goalEl.value : 0),
+          actual: submissionType === "Monday Goals" ? 0 : Number(actualEl ? actualEl.value : 0)
         };
       });
 
@@ -492,7 +739,10 @@
     document.getElementById("saveBtn").addEventListener("click", handleSave);
     document.getElementById("logoutBtn").addEventListener("click", logoutAndReset);
     document.getElementById("closeSuccessBtn").addEventListener("click", closeSuccessModal);
-    document.getElementById("submissionType").addEventListener("change", refreshPrefill);
+    document.getElementById("submissionType").addEventListener("change", async () => {
+      updateColumnVisibility();
+      await refreshPrefill();
+    });
     document.getElementById("weekStartDate").addEventListener("change", refreshPrefill);
   </script>
 </body>

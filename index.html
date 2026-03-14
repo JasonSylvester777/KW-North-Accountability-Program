@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KW North Agent Accountability</title>
+  <style>
+    :root{
+      --kw-red:#B01C2E;
+      --kw-red-dark:#8E1624;
+      --kw-charcoal:#1F2937;
+      --kw-charcoal-2:#374151;
+      --kw-border:#E5E7EB;
+      --kw-white:#FFFFFF;
+      --kw-bg:#F5F7FA;
+      --kw-success:#166534;
+      --kw-error:#991B1B;
+      --shadow:0 18px 45px rgba(15,23,42,.12);
+      --radius-xl:24px;
+      --radius-lg:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      background:linear-gradient(135deg,#f5f7fa 0%,#eef2f7 100%);
+      color:var(--kw-charcoal);
+    }
+
+    .page{
+      max-width:1200px;
+      margin:0 auto;
+      padding:28px 20px 40px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
+      color:#fff;
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:28px 30px;
+      position:relative;
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-60px;
+      top:-60px;
+      width:210px;
+      height:210px;
+      border-radius:50%;
+      background:rgba(176,28,46,0.18);
+    }
+
+    .hero-top{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      position:relative;
+      z-index:1;
+    }
+
+    .logo-wrap{
+      width:110px;
+      min-width:110px;
+      height:110px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+    }
+
+    .logo-wrap img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      display:block;
+    }
+
+    .hero-copy h1{
+      margin:0 0 8px;
+      font-size:36px;
+      line-height:1.05;
+    }
+
+    .hero-copy p{
+      margin:0;
+      color:#d1d5db;
+      line-height:1.6;
+      max-width:760px;
+    }
+
+    .main-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:24px;
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid var(--kw-border);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .card-head{
+      padding:20px 22px;
+      border-bottom:1px solid var(--kw-border);
+      background:#fff;
+    }
+
+    .card-head h2{
+      margin:0;
+      font-size:21px;
+      color:var(--kw-charcoal);
+    }
+
+    .card-body{
+      padding:22px;
+    }
+
+    .guide{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+
+    .guide-item{
+      border:1px solid var(--kw-border);
+      border-radius:16px;
+      background:#fafafa;
+      padding:14px 16px;
+    }
+
+    .guide-item strong{
+      display:block;
+      margin-bottom:5px;
+      color:var(--kw-red);
+      font-size:14px;
+    }
+
+    .guide-item span{
+      font-size:13px;
+      line-height:1.5;
+      color:#4b5563;
+    }
+
+    .grid-login{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+
+    .grid-form{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .field label{
+      font-size:13px;
+      font-weight:700;
+      color:var(--kw-charcoal-2);
+    }
+
+    .field input,
+    .field select{
+      width:100%;
+      height:48px;
+      border:1px solid var(--kw-border);
+      border-radius:12px;
+      padding:0 14px;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+    }
+
+    .field input:focus,
+    .field select:focus{
+      border-color:var(--kw-red);
+      box-shadow:0 0 0 3px rgba(176,28,46,0.12);
+    }
+
+    .field input[disabled]{
+      background:#f9fafb;
+      color:#6b7280;
+    }
+
+    .actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:12px;
+      margin-top:20px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      height:46px;
+      padding:0 18px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .btn-primary{
+      background:var(--kw-red);
+      color:#fff;
+    }
+
+    .btn-primary:hover{
+      background:var(--kw-red-dark);
+    }
+
+    .btn-secondary{
+      background:#e5e7eb;
+      color:#111827;
+    }
+
+    .pill-row{
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:var(--kw-charcoal);
+      color:#fff;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .pill.light{
+      background:#f3f4f6;
+      color:#374151;
+      border:1px solid #e5e7eb;
+    }
+
+    .note{
+      margin-top:10px;
+      font-size:12px;
+      color:#6b7280;
+      line-height:1.5;
+    }
+
+    .status{
+      margin-top:18px;
+      padding:14px 16px;
+      border-radius:14px;
+      display:none;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .status.ok{
+      display:block;
+      background:#ecfdf3;
+      color:var(--kw-success);
+      border:1px solid #bbf7d0;
+    }
+
+    .status.err{
+      display:block;
+      background:#fef2f2;
+      color:var(--kw-error);
+      border:1px solid #fecaca;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--kw-border);
+      border-radius:16px;
+      background:#fff;
+      margin-top:16px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+    }
+
+    th{
+      background:var(--kw-charcoal);
+      color:#fff;
+      text-align:left;
+      padding:12px;
+      font-size:13px;
+      white-space:nowrap;
+    }
+
+    td{
+      border-bottom:1px solid var(--kw-border);
+      padding:10px 12px;
+      font-size:14px;
+      vertical-align:middle;
+    }
+
+    tr:nth-child(even) td{
+      background:#fcfcfd;
+    }
+
+    .num{
+      width:110px;
+      height:40px;
+      border:1px solid var(--kw-border);
+      border-radius:10px;
+      padding:0 10px;
+      text-align:center;
+      font-size:14px;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      padding:20px;
+    }
+
+    .overlay.show{
+      display:flex;
+    }
+
+    .modal{
+      width:100%;
+      max-width:460px;
+      background:#fff;
+      border-radius:22px;
+      box-shadow:0 24px 60px rgba(0,0,0,.22);
+      overflow:hidden;
+      border:1px solid #e5e7eb;
+    }
+
+    .modal-head{
+      background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
+      color:#fff;
+      padding:20px 24px;
+    }
+
+    .modal-head h3{
+      margin:0;
+      font-size:22px;
+    }
+
+    .modal-body{
+      padding:24px;
+      color:#1f2937;
+      line-height:1.6;
+    }
+
+    .modal-actions{
+      display:flex;
+      justify-content:flex-end;
+      padding:0 24px 24px;
+    }
+
+    .modal-btn{
+      border:none;
+      border-radius:12px;
+      height:44px;
+      padding:0 18px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      background:var(--kw-red);
+      color:#fff;
+    }
+
+    .footer-note{
+      text-align:center;
+      font-size:12px;
+      color:#6b7280;
+      margin-top:10px;
+    }
+
+    @media (max-width: 980px){
+      .guide{grid-template-columns:1fr 1fr}
+      .grid-login{grid-template-columns:1fr}
+      .grid-form{grid-template-columns:1fr}
+      .hero-top{flex-direction:column;align-items:flex-start}
+      .logo-wrap{width:96px;height:96px;min-width:96px}
+    }
+
+    @media (max-width: 640px){
+      .guide{grid-template-columns:1fr}
+      .hero-copy h1{font-size:30px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div class="hero-top">
+        <div class="logo-wrap">
+          <img src="KW_LOGO-removebg-preview.png" alt="KW North Logo">
+        </div>
+        <div class="hero-copy">
+          <h1>KW North Agent Accountability</h1>
+          <p>Professional weekly submission workflow for GT3, CAP Academy, and F1 Top Agents. Secure login, group-based forms, and a polished KW North experience.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-head">
+          <h2>How it works</h2>
+        </div>
+        <div class="card-body">
+          <div class="guide">
+            <div class="guide-item">
+              <strong>Step 1</strong>
+              <span>Log in with your exact email address, first name, and surname.</span>
+            </div>
+            <div class="guide-item">
+              <strong>Step 2</strong>
+              <span>Your group and accountability fields load automatically.</span>
+            </div>
+            <div class="guide-item">
+              <strong>Step 3</strong>
+              <span>Wednesday and Friday can pull prior values from the same week.</span>
+            </div>
+            <div class="guide-item">
+              <strong>Step 4</strong>
+              <span>Submit your update and receive confirmation once saved.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="loginCard">
+        <div class="card-head">
+          <h2>Agent Login</h2>
+        </div>
+        <div class="card-body">
+          <div class="grid-login">
+            <div class="field">
+              <label>Email Address</label>
+              <input type="email" id="loginEmail" placeholder="Enter your email address">
+            </div>
+            <div class="field">
+              <label>First Name</label>
+              <input type="text" id="loginFirstName" placeholder="Enter your first name">
+            </div>
+            <div class="field">
+              <label>Surname</label>
+              <input type="text" id="loginSurname" placeholder="Enter your surname">
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" id="loginBtn">Continue</button>
+          </div>
+
+          <div id="loginStatus" class="status"></div>
+        </div>
+      </div>
+
+      <div class="card hidden" id="formCard">
+        <div class="card-head">
+          <h2>Weekly Submission</h2>
+        </div>
+        <div class="card-body">
+          <div class="grid-form">
+            <div class="field">
+              <label>Logged In Agent</label>
+              <input type="text" id="agentDisplay" disabled>
+            </div>
+            <div class="field">
+              <label>Submission Type</label>
+              <select id="submissionType">
+                <option value="Monday Goals">Monday Goals</option>
+                <option value="Wednesday Check-In">Wednesday Check-In</option>
+                <option value="Friday Final">Friday Final</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Week Start Date</label>
+              <input type="date" id="weekStartDate">
+            </div>
+            <div class="field">
+              <label>Today</label>
+              <input type="date" id="todayDate" disabled>
+            </div>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill" id="groupPill">Group</span>
+            <span class="pill light hidden" id="prefillPill">Weekly values loaded</span>
+          </div>
+
+          <div class="note">
+            This Vercel front end is ready to connect to your Apps Script backend. In Step 16 we will connect the login and submit actions to the live Apps Script endpoint.
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Activity</th>
+                  <th>Goal</th>
+                  <th>Actual</th>
+                </tr>
+              </thead>
+              <tbody id="activityBody"></tbody>
+            </table>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+            <button class="btn btn-primary" id="saveBtn">Save Submission</button>
+          </div>
+
+          <div id="formStatus" class="status"></div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        KW North Accountability System
+      </div>
+    </div>
+  </div>
+
+  <div id="successOverlay" class="overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Submission Successful</h3>
+      </div>
+      <div class="modal-body" id="successMessage">
+        Your submission has been saved successfully.
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn" id="closeSuccessBtn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*
+      STEP 16:
+      Replace this with your Apps Script Web App URL later.
+    */
+    const APPS_SCRIPT_BASE_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+    let loggedInAgent = null;
+    let currentActivities = [];
+    let isSubmitting = false;
+    let isLoggingIn = false;
+
+    const fallbackActivities = {
+      "GT3": [
+        { activityId: "GT3_01", activityName: "Conversations" },
+        { activityId: "GT3_02", activityName: "Appointments" },
+        { activityId: "GT3_03", activityName: "Active listing" }
+      ],
+      "CAP Academy": [
+        { activityId: "CAP_01", activityName: "New Contacts Added" },
+        { activityId: "CAP_02", activityName: "Conversations (Real Estate)" },
+        { activityId: "CAP_03", activityName: "Drive Area" },
+        { activityId: "CAP_04", activityName: "Prop24 & Private Property" },
+        { activityId: "CAP_05", activityName: "Follow-up Touches" },
+        { activityId: "CAP_06", activityName: "Appointments Set (Listings)" },
+        { activityId: "CAP_07", activityName: "Appointments Held (Listings)" },
+        { activityId: "CAP_08", activityName: "Board Up" },
+        { activityId: "CAP_09", activityName: "Listings Active" },
+        { activityId: "CAP_10", activityName: "Buyers Viewing" },
+        { activityId: "CAP_11", activityName: "Agreements Signed (Listing)" },
+        { activityId: "CAP_12", activityName: "New Listings Taken" },
+        { activityId: "CAP_13", activityName: "Offers Written" },
+        { activityId: "CAP_14", activityName: "Offers Accepted" },
+        { activityId: "CAP_15", activityName: "Offer with FICA Submitted to TC" }
+      ],
+      "F1 Top Agents": [
+        { activityId: "F1_01", activityName: "New Contacts Added" },
+        { activityId: "F1_02", activityName: "Conversations (Real Estate)" },
+        { activityId: "F1_03", activityName: "Drive Area" },
+        { activityId: "F1_04", activityName: "Prop24 & Private Property" },
+        { activityId: "F1_05", activityName: "Follow-up Touches" },
+        { activityId: "F1_06", activityName: "Appointments Set (Listings)" },
+        { activityId: "F1_07", activityName: "Appointments Held (Listings)" },
+        { activityId: "F1_08", activityName: "Board Up" },
+        { activityId: "F1_09", activityName: "Listings Active" },
+        { activityId: "F1_10", activityName: "Buyers Viewing" },
+        { activityId: "F1_11", activityName: "Agreements Signed (Listing)" },
+        { activityId: "F1_12", activityName: "New Listings Taken" },
+        { activityId: "F1_13", activityName: "Offers Written" },
+        { activityId: "F1_14", activityName: "Offers Accepted" },
+        { activityId: "F1_15", activityName: "Offer with FICA Submitted to TC" }
+      ]
+    };
+
+    function getTodayForInput() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function getMondayDate() {
+      const now = new Date();
+      const day = now.getDay();
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(now.setDate(diff));
+      const y = monday.getFullYear();
+      const m = String(monday.getMonth() + 1).padStart(2, "0");
+      const d = String(monday.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function setStatus(id, type, message) {
+      const box = document.getElementById(id);
+      box.className = "status";
+      box.textContent = "";
+      if (!type) return;
+      box.classList.add(type);
+      box.textContent = message;
+    }
+
+    function setButtonState(id, loading, loadingText, normalText) {
+      const btn = document.getElementById(id);
+      btn.disabled = loading;
+      btn.textContent = loading ? loadingText : normalText;
+      btn.style.opacity = loading ? "0.75" : "1";
+    }
+
+    function renderActivityRows() {
+      const body = document.getElementById("activityBody");
+      body.innerHTML = "";
+
+      currentActivities.forEach(activity => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${activity.activityName}</td>
+          <td><input class="num" type="number" min="0" step="1" id="goal_${activity.activityId}" value="0"></td>
+          <td><input class="num" type="number" min="0" step="1" id="actual_${activity.activityId}" value="0"></td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    function showSuccessModal(message) {
+      document.getElementById("successMessage").textContent = message;
+      document.getElementById("successOverlay").classList.add("show");
+    }
+
+    function closeSuccessModal() {
+      document.getElementById("successOverlay").classList.remove("show");
+    }
+
+    function logoutAndReset() {
+      loggedInAgent = null;
+      currentActivities = [];
+      document.getElementById("loginCard").classList.remove("hidden");
+      document.getElementById("formCard").classList.add("hidden");
+      document.getElementById("loginEmail").value = "";
+      document.getElementById("loginFirstName").value = "";
+      document.getElementById("loginSurname").value = "";
+      document.getElementById("activityBody").innerHTML = "";
+      document.getElementById("prefillPill").classList.add("hidden");
+      setStatus("loginStatus", "", "");
+      setStatus("formStatus", "", "");
+      closeSuccessModal();
+    }
+
+    function mockLogin() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const firstName = document.getElementById("loginFirstName").value.trim();
+      const surname = document.getElementById("loginSurname").value.trim();
+
+      if (!email || !firstName || !surname) {
+        setStatus("loginStatus", "err", "Please complete email, first name, and surname.");
+        return;
+      }
+
+      let group = "GT3";
+      const nameBlob = `${email} ${firstName} ${surname}`.toLowerCase();
+
+      if (nameBlob.includes("cap")) group = "CAP Academy";
+      if (nameBlob.includes("f1")) group = "F1 Top Agents";
+
+      loggedInAgent = {
+        agentId: "TEMP001",
+        firstName,
+        surname,
+        fullName: `${firstName} ${surname}`,
+        emailAddress: email,
+        group
+      };
+
+      currentActivities = fallbackActivities[group] || fallbackActivities["GT3"];
+
+      document.getElementById("loginCard").classList.add("hidden");
+      document.getElementById("formCard").classList.remove("hidden");
+      document.getElementById("agentDisplay").value = `${loggedInAgent.fullName} (${loggedInAgent.emailAddress})`;
+      document.getElementById("todayDate").value = getTodayForInput();
+      document.getElementById("weekStartDate").value = getMondayDate();
+      document.getElementById("groupPill").textContent = `Group: ${loggedInAgent.group}`;
+      document.getElementById("prefillPill").textContent = "Front-end preview mode active";
+      document.getElementById("prefillPill").classList.remove("hidden");
+
+      renderActivityRows();
+      setStatus("loginStatus", "ok", "Preview login successful.");
+    }
+
+    async function handleLogin() {
+      if (isLoggingIn) return;
+
+      const email = document.getElementById("loginEmail").value.trim();
+      const firstName = document.getElementById("loginFirstName").value.trim();
+      const surname = document.getElementById("loginSurname").value.trim();
+
+      if (!email || !firstName || !surname) {
+        setStatus("loginStatus", "err", "Please complete email, first name, and surname.");
+        return;
+      }
+
+      if (!APPS_SCRIPT_BASE_URL || APPS_SCRIPT_BASE_URL.includes("PASTE_YOUR_APPS_SCRIPT")) {
+        mockLogin();
+        return;
+      }
+
+      try {
+        isLoggingIn = true;
+        setButtonState("loginBtn", true, "Checking...", "Continue");
+        setStatus("loginStatus", "", "");
+
+        const res = await fetch(APPS_SCRIPT_BASE_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "loginAgent",
+            payload: { email, firstName, surname }
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.message || "Login failed.");
+        }
+
+        loggedInAgent = data.agent;
+        currentActivities = data.activities || [];
+
+        document.getElementById("loginCard").classList.add("hidden");
+        document.getElementById("formCard").classList.remove("hidden");
+        document.getElementById("agentDisplay").value = `${loggedInAgent.fullName} (${loggedInAgent.emailAddress})`;
+        document.getElementById("todayDate").value = data.today || getTodayForInput();
+        document.getElementById("weekStartDate").value = data.mondayDate || getMondayDate();
+        document.getElementById("groupPill").textContent = `Group: ${loggedInAgent.group}`;
+        document.getElementById("prefillPill").classList.add("hidden");
+
+        renderActivityRows();
+      } catch (error) {
+        setStatus("loginStatus", "err", error.message || "Login failed.");
+      } finally {
+        isLoggingIn = false;
+        setButtonState("loginBtn", false, "Checking...", "Continue");
+      }
+    }
+
+    async function handleSave() {
+      if (isSubmitting) return;
+
+      if (!loggedInAgent) {
+        setStatus("formStatus", "err", "Please log in first.");
+        return;
+      }
+
+      const submissionType = document.getElementById("submissionType").value;
+      const weekStartDate = document.getElementById("weekStartDate").value;
+
+      if (!weekStartDate) {
+        setStatus("formStatus", "err", "Please select the week start date.");
+        return;
+      }
+
+      const values = {};
+      currentActivities.forEach(activity => {
+        values[activity.activityId] = {
+          goal: Number(document.getElementById(`goal_${activity.activityId}`).value || 0),
+          actual: Number(document.getElementById(`actual_${activity.activityId}`).value || 0)
+        };
+      });
+
+      if (!APPS_SCRIPT_BASE_URL || APPS_SCRIPT_BASE_URL.includes("PASTE_YOUR_APPS_SCRIPT")) {
+        setStatus("formStatus", "ok", "Preview mode only. Step 16 will save this to the live Apps Script backend.");
+        showSuccessModal(`Preview submission completed for ${loggedInAgent.fullName}.`);
+        return;
+      }
+
+      try {
+        isSubmitting = true;
+        setButtonState("saveBtn", true, "Saving...", "Save Submission");
+        setStatus("formStatus", "", "");
+
+        const res = await fetch(APPS_SCRIPT_BASE_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "submitWebAppForm",
+            payload: {
+              agentId: loggedInAgent.agentId,
+              submissionType,
+              weekStartDate,
+              values
+            }
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.message || "Submission failed.");
+        }
+
+        setStatus("formStatus", "ok", `${data.message} Agent: ${data.agentName}. Group: ${data.group}.`);
+        showSuccessModal(`Submission saved successfully for ${data.agentName}.`);
+      } catch (error) {
+        setStatus("formStatus", "err", error.message || "Something went wrong while saving.");
+      } finally {
+        isSubmitting = false;
+        setButtonState("saveBtn", false, "Saving...", "Save Submission");
+      }
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", handleLogin);
+    document.getElementById("saveBtn").addEventListener("click", handleSave);
+    document.getElementById("logoutBtn").addEventListener("click", logoutAndReset);
+    document.getElementById("closeSuccessBtn").addEventListener("click", closeSuccessModal);
+
+    document.getElementById("todayDate").value = getTodayForInput();
+    document.getElementById("weekStartDate").value = getMondayDate();
+  </script>
+</body>
+</html>

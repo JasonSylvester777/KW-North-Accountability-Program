@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KW North Manager Dashboard</title>
+  <style>
+    :root{
+      --kw-red:#B01C2E;
+      --kw-red-dark:#8E1624;
+      --kw-charcoal:#1F2937;
+      --kw-border:#E5E7EB;
+      --kw-bg:#F5F7FA;
+      --kw-success:#166534;
+      --kw-error:#991B1B;
+      --shadow:0 18px 45px rgba(15,23,42,.12);
+      --radius-xl:24px;
+      --radius-lg:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      background:linear-gradient(135deg,#f5f7fa 0%,#eef2f7 100%);
+      color:var(--kw-charcoal);
+    }
+
+    .page{
+      max-width:1400px;
+      margin:0 auto;
+      padding:28px 20px 40px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
+      color:#fff;
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:28px 30px;
+      position:relative;
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-60px;
+      top:-60px;
+      width:210px;
+      height:210px;
+      border-radius:50%;
+      background:rgba(176,28,46,0.18);
+    }
+
+    .hero-top{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      position:relative;
+      z-index:1;
+    }
+
+    .logo-wrap{
+      width:110px;
+      min-width:110px;
+      height:110px;
+      background:#ffffff;
+      border:1px solid rgba(255,255,255,0.35);
+      border-radius:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      box-shadow:0 10px 24px rgba(15,23,42,.14);
+    }
+
+    .logo-wrap img{
+      max-width:92%;
+      max-height:92%;
+      object-fit:contain;
+      display:block;
+    }
+
+    .hero-copy h1{
+      margin:0 0 8px;
+      font-size:36px;
+      line-height:1.05;
+    }
+
+    .hero-copy p{
+      margin:0;
+      color:#d1d5db;
+      line-height:1.6;
+      max-width:760px;
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid var(--kw-border);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+
+    .card-head{
+      padding:20px 22px;
+      border-bottom:1px solid var(--kw-border);
+      background:#fff;
+    }
+
+    .card-head h2{
+      margin:0;
+      font-size:21px;
+      color:var(--kw-charcoal);
+    }
+
+    .card-body{
+      padding:22px;
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns:1fr auto auto;
+      gap:14px;
+      align-items:end;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .field label{
+      font-size:13px;
+      font-weight:700;
+      color:#374151;
+    }
+
+    .field input{
+      width:100%;
+      height:48px;
+      border:1px solid var(--kw-border);
+      border-radius:12px;
+      padding:0 14px;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      height:46px;
+      padding:0 18px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .btn-primary{
+      background:var(--kw-red);
+      color:#fff;
+    }
+
+    .btn-primary:hover{
+      background:var(--kw-red-dark);
+    }
+
+    .btn-secondary{
+      background:#e5e7eb;
+      color:#111827;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+      margin-bottom:24px;
+    }
+
+    .stat{
+      background:#fff;
+      border:1px solid var(--kw-border);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat .label{
+      font-size:12px;
+      color:#6b7280;
+      margin-bottom:6px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .stat .value{
+      font-size:28px;
+      font-weight:700;
+      color:#1f2937;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--kw-border);
+      border-radius:16px;
+      background:#fff;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:900px;
+      background:#fff;
+    }
+
+    th{
+      background:#1f2937;
+      color:#fff;
+      text-align:left;
+      padding:12px;
+      font-size:13px;
+    }
+
+    td{
+      border-bottom:1px solid var(--kw-border);
+      padding:10px 12px;
+      font-size:14px;
+    }
+
+    .ok{
+      color:var(--kw-success);
+      font-weight:700;
+    }
+
+    .missing{
+      color:var(--kw-error);
+      font-weight:700;
+    }
+
+    .status{
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:14px;
+      display:none;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .status.ok{
+      display:block;
+      background:#ecfdf3;
+      color:var(--kw-success);
+      border:1px solid #bbf7d0;
+    }
+
+    .status.err{
+      display:block;
+      background:#fef2f2;
+      color:var(--kw-error);
+      border:1px solid #fecaca;
+    }
+
+    @media (max-width: 980px){
+      .controls{grid-template-columns:1fr}
+      .stats{grid-template-columns:1fr 1fr}
+      .hero-top{flex-direction:column;align-items:flex-start}
+      .logo-wrap{width:96px;height:96px;min-width:96px}
+    }
+
+    @media (max-width: 640px){
+      .stats{grid-template-columns:1fr}
+      .hero-copy h1{font-size:30px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div class="hero-top">
+        <div class="logo-wrap">
+          <img src="KW_LOGO-removebg-preview.png" alt="KW North Logo">
+        </div>
+        <div class="hero-copy">
+          <h1>KW North Manager Dashboard</h1>
+          <p>Live weekly oversight for GT3, CAP Academy, and F1 Top Agents. Review all submissions or switch to outstanding-only view.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Dashboard Controls</h2>
+      </div>
+      <div class="card-body">
+        <div class="controls">
+          <div class="field">
+            <label>Week Start Date</label>
+            <input type="date" id="weekStartDate">
+          </div>
+          <button class="btn btn-primary" id="loadBtn">Show All</button>
+          <button class="btn btn-secondary" id="outstandingBtn">Outstanding Only</button>
+        </div>
+        <div id="statusBox" class="status"></div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="label">Total Agents</div>
+        <div class="value" id="totalAgents">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Monday Submitted</div>
+        <div class="value" id="mondaySubmitted">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Wednesday Submitted</div>
+        <div class="value" id="wednesdaySubmitted">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Friday Submitted</div>
+        <div class="value" id="fridaySubmitted">0</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>GT3</h2></div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Email</th>
+                <th>Monday</th>
+                <th>Wednesday</th>
+                <th>Friday</th>
+              </tr>
+            </thead>
+            <tbody id="gt3Body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>CAP Academy</h2></div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Email</th>
+                <th>Monday</th>
+                <th>Wednesday</th>
+                <th>Friday</th>
+              </tr>
+            </thead>
+            <tbody id="capBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>F1 Top Agents</h2></div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Email</th>
+                <th>Monday</th>
+                <th>Wednesday</th>
+                <th>Friday</th>
+              </tr>
+            </thead>
+            <tbody id="f1Body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_BASE_URL = "https://script.google.com/macros/s/AKfycbySmE1dJk53Ues_ZoNMTQL2HjncDRDMf1j1dUt4qDd5BbgugkP5nuZsFQzGHdPoP7-V6g/exec";
+    let latestData = null;
+
+    function apiPost(action, payload = {}) {
+      return fetch(APPS_SCRIPT_BASE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action, payload })
+      }).then(async res => {
+        const data = await res.json();
+        if (!data.success) {
+          throw new Error(data.message || "Request failed.");
+        }
+        return data;
+      });
+    }
+
+    function setStatus(type, message) {
+      const box = document.getElementById('statusBox');
+      box.className = 'status';
+      box.textContent = '';
+      if (!type) return;
+      box.classList.add(type);
+      box.textContent = message;
+    }
+
+    function setButtonsState(loading) {
+      const loadBtn = document.getElementById('loadBtn');
+      const outstandingBtn = document.getElementById('outstandingBtn');
+
+      loadBtn.disabled = loading;
+      outstandingBtn.disabled = loading;
+
+      loadBtn.textContent = loading ? 'Loading...' : 'Show All';
+      outstandingBtn.textContent = loading ? 'Loading...' : 'Outstanding Only';
+
+      loadBtn.style.opacity = loading ? '0.75' : '1';
+      outstandingBtn.style.opacity = loading ? '0.75' : '1';
+    }
+
+    function renderGroup(elementId, rows, outstandingOnly) {
+      const body = document.getElementById(elementId);
+      body.innerHTML = '';
+
+      let filteredRows = rows || [];
+
+      if (outstandingOnly) {
+        filteredRows = filteredRows.filter(row =>
+          row.monday === 'Missing' ||
+          row.wednesday === 'Missing' ||
+          row.friday === 'Missing'
+        );
+      }
+
+      if (!filteredRows.length) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="5">No agents to display for this view.</td>`;
+        body.appendChild(tr);
+        return;
+      }
+
+      filteredRows.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.fullName}</td>
+          <td>${row.emailAddress}</td>
+          <td class="${row.monday === 'Submitted' ? 'ok' : 'missing'}">${row.monday}</td>
+          <td class="${row.wednesday === 'Submitted' ? 'ok' : 'missing'}">${row.wednesday}</td>
+          <td class="${row.friday === 'Submitted' ? 'ok' : 'missing'}">${row.friday}</td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    function renderDashboard(data, outstandingOnly) {
+      document.getElementById('totalAgents').textContent = data.totals.totalAgents;
+      document.getElementById('mondaySubmitted').textContent = data.totals.mondaySubmitted;
+      document.getElementById('wednesdaySubmitted').textContent = data.totals.wednesdaySubmitted;
+      document.getElementById('fridaySubmitted').textContent = data.totals.fridaySubmitted;
+
+      renderGroup('gt3Body', data.groups.gt3, outstandingOnly);
+      renderGroup('capBody', data.groups.cap, outstandingOnly);
+      renderGroup('f1Body', data.groups.f1, outstandingOnly);
+    }
+
+    async function loadDashboard(outstandingOnly) {
+      const weekStartDate = document.getElementById('weekStartDate').value;
+      if (!weekStartDate) {
+        setStatus('err', 'Please select a week start date.');
+        return;
+      }
+
+      try {
+        setButtonsState(true);
+        setStatus('', '');
+
+        const data = await apiPost('getManagerDashboardData', { weekStartDate });
+        latestData = data;
+        renderDashboard(data, outstandingOnly);
+
+        setStatus('ok',
+          outstandingOnly
+            ? `Outstanding-only dashboard loaded for week starting ${data.weekStartDate}.`
+            : `Full dashboard loaded for week starting ${data.weekStartDate}.`
+        );
+      } catch (error) {
+        setStatus('err', error.message || 'Could not load dashboard.');
+      } finally {
+        setButtonsState(false);
+      }
+    }
+
+    async function init() {
+      try {
+        const data = await apiPost('getManagerDashboardSetupData');
+        document.getElementById('weekStartDate').value = data.mondayDate;
+        await loadDashboard(false);
+      } catch (error) {
+        setStatus('err', error.message || 'Could not initialize dashboard.');
+      }
+    }
+
+    document.getElementById('loadBtn').addEventListener('click', () => loadDashboard(false));
+    document.getElementById('outstandingBtn').addEventListener('click', () => loadDashboard(true));
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,1487 +1,747 @@
-const GROUPS = {
-  GT3: 'GT3',
-  CAP: 'CAP Academy',
-  F1: 'F1 Top Agents'
-};
-
-const SUBMISSION_TYPES = {
-  MONDAY: 'Monday Goals',
-  WEDNESDAY: 'Wednesday Check-In',
-  FRIDAY: 'Friday Final'
-};
-
-const GT3_ACTIVITY_MAP = {
-  'Conversations': 'Conversations',
-  'Appointments': 'Appointments',
-  'Active listing': 'Active Listing'
-};
-
-const FULL_ACTIVITY_LIST = [
-  'New Contacts Added',
-  'Conversations (Real Estate)',
-  'Drive Area',
-  'Prop24 & Private Property',
-  'Follow-up Touches',
-  'Appointments Set (Listings)',
-  'Appointments Held (Listings)',
-  'Board Up',
-  'Listings Active',
-  'Buyers Viewing',
-  'Agreements Signed (Listing)',
-  'New Listings Taken',
-  'Offers Written',
-  'Offers Accepted',
-  'Offer with FICA Submitted to TC'
-];
-
-function onOpen() {
-  SpreadsheetApp.getUi()
-    .createMenu('KW North Accountability')
-    .addItem('1. Validate Workbook Structure', 'validateWorkbookStructure')
-    .addItem('2. Rebuild All Reports', 'rebuildAllReports')
-    .addItem('3. Clear Report Data Only', 'clearReportDataOnly')
-    .addSeparator()
-    .addItem('4. Add Sample GT3 Data', 'addSampleGT3Data')
-    .addItem('5. Add Sample CAP Data', 'addSampleCAPData')
-    .addItem('6. Add Sample F1 Data', 'addSampleF1Data')
-    .addItem('7. Clear Raw Submission Test Data', 'clearRawSubmissionTestData')
-    .addSeparator()
-    .addItem('8. Open Internal Test Submission Form', 'openInternalSubmissionForm')
-    .addItem('9. Open KW North Branded Web App Preview', 'openWebAppPreview')
-    .addItem('10. Open Manager Dashboard Preview', 'openManagerDashboardPreview')
-    .addSeparator()
-    .addItem('11. Send Test Review Email', 'sendManualTestReviewEmail')
-    .addItem('12. Rebuild Manager Dashboard for Current Week', 'rebuildManagerDashboardCurrentWeek')
-    .addSeparator()
-    .addItem('13. Send Monday Missing Reminders', 'sendMondayReminders')
-    .addItem('14. Send Wednesday Missing Reminders', 'sendWednesdayReminders')
-    .addItem('15. Send Friday Missing Reminders', 'sendFridayReminders')
-    .addToUi();
-}
-
-function doGet(e) {
-  if (e && e.parameter && e.parameter.api === '1') {
-    return jsonOutput_({
-      success: true,
-      message: 'KW North API is live.',
-      today: formatDateForInput_(new Date()),
-      mondayDate: getMondayDateString_(new Date())
-    });
-  }
-
-  return HtmlService.createHtmlOutputFromFile('WebApp')
-    .setTitle('KW North Accountability')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-}
-
-function doPost(e) {
-  try {
-    const body = e && e.postData && e.postData.contents ? e.postData.contents : '{}';
-    const req = JSON.parse(body);
-    const action = String(req.action || '').trim();
-    const payload = req.payload || {};
-
-    if (!action) {
-      return jsonOutput_({ success: false, message: 'No action supplied.' });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KW North Agent Accountability</title>
+  <style>
+    :root{
+      --kw-red:#B01C2E;
+      --kw-red-dark:#8E1624;
+      --kw-charcoal:#1F2937;
+      --kw-charcoal-2:#374151;
+      --kw-border:#E5E7EB;
+      --kw-white:#FFFFFF;
+      --kw-bg:#F5F7FA;
+      --kw-success:#166534;
+      --kw-error:#991B1B;
+      --shadow:0 18px 45px rgba(15,23,42,.12);
+      --radius-xl:24px;
+      --radius-lg:18px;
     }
 
-    switch (action) {
-      case 'getLoginPageSetupData':
-        return jsonOutput_(getLoginPageSetupData());
-      case 'loginAgent':
-        return jsonOutput_(loginAgent(payload));
-      case 'getWeekPrefillData':
-        return jsonOutput_(getWeekPrefillData(payload.agentId, payload.weekStartDate, payload.submissionType));
-      case 'submitWebAppForm':
-        return jsonOutput_(submitWebAppForm(payload));
-      case 'getManagerDashboardSetupData':
-        return jsonOutput_(getManagerDashboardSetupData());
-      case 'getManagerDashboardData':
-        return jsonOutput_(getManagerDashboardData(payload.weekStartDate));
-      default:
-        return jsonOutput_({ success: false, message: `Unknown action: ${action}` });
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      background:linear-gradient(135deg,#f5f7fa 0%,#eef2f7 100%);
+      color:var(--kw-charcoal);
     }
-  } catch (error) {
-    return jsonOutput_({
-      success: false,
-      message: error && error.message ? error.message : 'Unexpected server error.'
-    });
-  }
-}
-
-function jsonOutput_(obj) {
-  return ContentService
-    .createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function openWebAppPreview() {
-  const html = HtmlService.createHtmlOutputFromFile('WebApp')
-    .setWidth(1200)
-    .setHeight(780);
-  SpreadsheetApp.getUi().showModalDialog(html, 'KW North Branded Submission Preview');
-}
-
-function openManagerDashboardPreview() {
-  const html = HtmlService.createHtmlOutputFromFile('ManagerDashboard')
-    .setWidth(1280)
-    .setHeight(820);
-  SpreadsheetApp.getUi().showModalDialog(html, 'KW North Manager Dashboard');
-}
-
-function openInternalSubmissionForm() {
-  const html = HtmlService.createHtmlOutputFromFile('SubmissionForm')
-    .setWidth(980)
-    .setHeight(720);
-  SpreadsheetApp.getUi().showModalDialog(html, 'KW North Internal Test Submission Form');
-}
-
-function getLoginPageSetupData() {
-  return {
-    success: true,
-    submissionTypes: [
-      SUBMISSION_TYPES.MONDAY,
-      SUBMISSION_TYPES.WEDNESDAY,
-      SUBMISSION_TYPES.FRIDAY
-    ],
-    today: formatDateForInput_(new Date()),
-    mondayDate: getMondayDateString_(new Date())
-  };
-}
-
-function getManagerDashboardSetupData() {
-  const settings = getSettingsMap_();
-  return {
-    success: true,
-    today: formatDateForInput_(new Date()),
-    mondayDate: getMondayDateString_(new Date()),
-    webAppUrl: String(settings['Web App URL'] || '').trim()
-  };
-}
-
-function loginAgent(payload) {
-  validateWorkbookStructureSilently_();
-
-  if (!payload) throw new Error('Login information was not received.');
-
-  const email = String(payload.email || '').trim().toLowerCase();
-
-  if (!email) throw new Error('Email address is required.');
-
-  const agent = getAgents_().find(a =>
-    String(a.emailAddress || '').trim().toLowerCase() === email &&
-    String(a.active || '').trim() === 'Yes'
-  );
-
-  if (!agent) {
-    throw new Error('This email address does not match an active agent record.');
-  }
-
-  const activities = getActivitiesForGroup(agent.group);
-  if (!activities.length) {
-    throw new Error('No active activities found for this group.');
-  }
-
-  return {
-    success: true,
-    agent: {
-      agentId: agent.agentId,
-      firstName: agent.firstName,
-      surname: agent.surname,
-      fullName: agent.fullName,
-      emailAddress: agent.emailAddress,
-      group: agent.group
-    },
-    activities: activities,
-    submissionTypes: [
-      SUBMISSION_TYPES.MONDAY,
-      SUBMISSION_TYPES.WEDNESDAY,
-      SUBMISSION_TYPES.FRIDAY
-    ],
-    today: formatDateForInput_(new Date()),
-    mondayDate: getMondayDateString_(new Date())
-  };
-}
-
-function getWeekPrefillData(agentId, weekStartDate, submissionType) {
-  validateWorkbookStructureSilently_();
-
-  if (!agentId) throw new Error('Agent is required.');
-  if (!weekStartDate) throw new Error('Week start date is required.');
-  if (!submissionType) throw new Error('Submission type is required.');
-
-  const agent = getAgentById_(agentId);
-  if (!agent) throw new Error('Agent not found.');
-
-  const activities = getActivitiesForGroup(agent.group);
-  const rawRecords = getRawSubmissionRecords_().filter(r =>
-    r.agentId === agentId &&
-    r.weekStartDate === weekStartDate
-  );
-
-  const mondayMap = {};
-  const wednesdayMap = {};
-  const fridayMap = {};
-
-  rawRecords.forEach(r => {
-    if (r.submissionType === SUBMISSION_TYPES.MONDAY) mondayMap[r.activityId] = r;
-    else if (r.submissionType === SUBMISSION_TYPES.WEDNESDAY) wednesdayMap[r.activityId] = r;
-    else if (r.submissionType === SUBMISSION_TYPES.FRIDAY) fridayMap[r.activityId] = r;
-  });
-
-  const result = {};
-  activities.forEach(activity => {
-    const monday = mondayMap[activity.activityId] || null;
-    const wednesday = wednesdayMap[activity.activityId] || null;
-    const friday = fridayMap[activity.activityId] || null;
-
-    let goal = 0;
-    let actual = 0;
-
-    if (submissionType === SUBMISSION_TYPES.MONDAY) {
-      if (monday) {
-        goal = toNumber_(monday.goal);
-        actual = toNumber_(monday.actual);
-      }
-    } else if (submissionType === SUBMISSION_TYPES.WEDNESDAY) {
-      if (monday) goal = toNumber_(monday.goal);
-      if (wednesday) actual = toNumber_(wednesday.actual);
-    } else if (submissionType === SUBMISSION_TYPES.FRIDAY) {
-      if (monday) goal = toNumber_(monday.goal);
-      if (friday) actual = toNumber_(friday.actual);
-      else if (wednesday) actual = toNumber_(wednesday.actual);
+    .page{max-width:1200px;margin:0 auto;padding:28px 20px 40px;}
+    .hero{
+      background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
+      color:#fff;
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:28px 30px;
+      position:relative;
+      overflow:hidden;
+      margin-bottom:24px;
     }
-
-    result[activity.activityId] = {
-      goal: goal,
-      actual: actual,
-      hasMonday: !!monday,
-      hasWednesday: !!wednesday,
-      hasFriday: !!friday
-    };
-  });
-
-  return {
-    success: true,
-    agentId: agentId,
-    weekStartDate: weekStartDate,
-    submissionType: submissionType,
-    values: result
-  };
-}
-
-function submitWebAppForm(payload) {
-  return saveSubmission_(payload);
-}
-
-function submitInternalForm(payload) {
-  return saveSubmission_(payload);
-}
-
-function saveSubmission_(payload) {
-  validateWorkbookStructureSilently_();
-
-  if (!payload) throw new Error('No submission data received.');
-  if (!payload.agentId) throw new Error('Agent is required.');
-  if (!payload.submissionType) throw new Error('Submission type is required.');
-  if (!payload.weekStartDate) throw new Error('Week start date is required.');
-
-  const agent = getAgentById_(payload.agentId);
-  if (!agent) throw new Error('Selected agent was not found.');
-  if (String(agent.active || '').trim() !== 'Yes') throw new Error('This agent is not active.');
-
-  const activities = getActivitiesForGroup(agent.group);
-  if (!activities.length) throw new Error('No active activities found for this group.');
-
-  const rawSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Submissions_Raw');
-  const weekStart = payload.weekStartDate;
-  const weekDate = new Date(weekStart + 'T00:00:00');
-  const monthName = Utilities.formatDate(weekDate, Session.getScriptTimeZone(), 'MMMM');
-  const monthNumber = Number(Utilities.formatDate(weekDate, Session.getScriptTimeZone(), 'M'));
-  const year = Number(Utilities.formatDate(weekDate, Session.getScriptTimeZone(), 'yyyy'));
-
-  const values = payload.values || {};
-  const emailActivities = [];
-  const existingRowsMap = getExistingSubmissionRowsMap_(agent.agentId, weekStart, payload.submissionType);
-
-  activities.forEach(activity => {
-    const entry = values[activity.activityId] || {};
-    const goal = toNumber_(entry.goal);
-    const actual = toNumber_(entry.actual);
-    let gap = '';
-
-    if (payload.submissionType === SUBMISSION_TYPES.FRIDAY) {
-      gap = actual - goal;
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-60px;
+      top:-60px;
+      width:210px;
+      height:210px;
+      border-radius:50%;
+      background:rgba(176,28,46,0.18);
     }
-
-    const rowValues = [
-      new Date(),
-      Utilities.getUuid(),
-      agent.agentId,
-      agent.firstName,
-      agent.surname,
-      agent.fullName,
-      agent.emailAddress,
-      agent.group,
-      payload.submissionType,
-      weekStart,
-      weekStart,
-      monthName,
-      monthNumber,
-      year,
-      activity.activityId,
-      activity.activityName,
-      goal,
-      actual,
-      gap
-    ];
-
-    if (existingRowsMap[activity.activityId]) {
-      const rowNumber = existingRowsMap[activity.activityId];
-      rawSheet.getRange(rowNumber, 1, 1, rowValues.length).setValues([rowValues]);
-    } else {
-      rawSheet.appendRow(rowValues);
+    .hero-top{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      position:relative;
+      z-index:1;
     }
-
-    emailActivities.push({
-      activityId: activity.activityId,
-      activityName: activity.activityName,
-      goal: goal,
-      actual: actual,
-      gap: gap
-    });
-  });
-
-  rebuildAllReportsSilently_();
-
-  const submission = {
-    agentId: agent.agentId,
-    agentName: agent.fullName,
-    agentEmail: agent.emailAddress,
-    group: agent.group,
-    submissionType: payload.submissionType,
-    weekStartDate: weekStart,
-    monthName: monthName,
-    year: year,
-    activities: emailActivities
-  };
-
-  sendReviewEmail_(submission);
-  sendAgentCopyEmail_(submission);
-
-  return {
-    success: true,
-    message: 'Submission saved successfully.',
-    agentName: agent.fullName,
-    group: agent.group,
-    rowsAdded: activities.length
-  };
-}
-
-function getManagerDashboardData(weekStartDate) {
-  validateWorkbookStructureSilently_();
-
-  if (!weekStartDate) throw new Error('Week start date is required.');
-
-  const agents = getAgents_().filter(a => String(a.active || '').trim() === 'Yes');
-  const rawRecords = getRawSubmissionRecords_().filter(r => r.weekStartDate === weekStartDate);
-
-  const submissionMap = {};
-  rawRecords.forEach(r => {
-    submissionMap[`${r.agentId}||${r.submissionType}`] = true;
-  });
-
-  const rows = agents.map(agent => ({
-    group: agent.group,
-    agentId: agent.agentId,
-    fullName: agent.fullName,
-    emailAddress: agent.emailAddress,
-    weekStartDate: weekStartDate,
-    monday: submissionMap[`${agent.agentId}||${SUBMISSION_TYPES.MONDAY}`] ? 'Submitted' : 'Missing',
-    wednesday: submissionMap[`${agent.agentId}||${SUBMISSION_TYPES.WEDNESDAY}`] ? 'Submitted' : 'Missing',
-    friday: submissionMap[`${agent.agentId}||${SUBMISSION_TYPES.FRIDAY}`] ? 'Submitted' : 'Missing'
-  }));
-
-  return {
-    success: true,
-    weekStartDate: weekStartDate,
-    totals: {
-      totalAgents: rows.length,
-      mondaySubmitted: rows.filter(r => r.monday === 'Submitted').length,
-      wednesdaySubmitted: rows.filter(r => r.wednesday === 'Submitted').length,
-      fridaySubmitted: rows.filter(r => r.friday === 'Submitted').length
-    },
-    groups: {
-      gt3: rows.filter(r => r.group === GROUPS.GT3),
-      cap: rows.filter(r => r.group === GROUPS.CAP),
-      f1: rows.filter(r => r.group === GROUPS.F1)
+    .logo-wrap{
+      width:110px;
+      min-width:110px;
+      height:110px;
+      background:#ffffff;
+      border:1px solid rgba(255,255,255,0.35);
+      border-radius:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      box-shadow:0 10px 24px rgba(15,23,42,.14);
     }
-  };
-}
-
-function rebuildManagerDashboardCurrentWeek() {
-  const monday = getMondayDateString_(new Date());
-  rebuildManagerDashboardSheet_(monday);
-  SpreadsheetApp.getUi().alert(`Manager dashboard rebuilt for week starting ${monday}`);
-}
-
-function rebuildManagerDashboardSheet_(weekStartDate) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName('Manager_Dashboard');
-  if (!sheet) throw new Error('Manager_Dashboard sheet is missing.');
-
-  const data = getManagerDashboardData(weekStartDate);
-  const allRows = [].concat(data.groups.gt3, data.groups.cap, data.groups.f1);
-
-  const headers = [
-    'Group',
-    'Agent ID',
-    'Full Name',
-    'Email Address',
-    'Week Start Date',
-    'Monday Goals',
-    'Wednesday Check-In',
-    'Friday Final'
-  ];
-
-  sheet.clearContents();
-  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-
-  if (allRows.length) {
-    const values = allRows.map(r => [
-      r.group,
-      r.agentId,
-      r.fullName,
-      r.emailAddress,
-      r.weekStartDate,
-      r.monday,
-      r.wednesday,
-      r.friday
-    ]);
-    sheet.getRange(2, 1, values.length, values[0].length).setValues(values);
-  }
-
-  formatManagerDashboardSheet_(sheet);
-}
-
-function formatManagerDashboardSheet_(sheet) {
-  const lastCol = sheet.getLastColumn();
-  const lastRow = sheet.getLastRow();
-
-  if (lastCol > 0) {
-    sheet.getRange(1, 1, 1, lastCol)
-      .setFontWeight('bold')
-      .setBackground('#1F2937')
-      .setFontColor('#ffffff');
-    sheet.setFrozenRows(1);
-    if (!sheet.getFilter()) {
-      sheet.getRange(1, 1, Math.max(lastRow, 1), lastCol).createFilter();
+    .logo-wrap img{
+      max-width:92%;
+      max-height:92%;
+      object-fit:contain;
+      display:block;
     }
-    sheet.autoResizeColumns(1, lastCol);
-  }
-}
-
-function sendMondayReminders() {
-  sendMissingSubmissionReminders_(SUBMISSION_TYPES.MONDAY);
-}
-
-function sendWednesdayReminders() {
-  sendMissingSubmissionReminders_(SUBMISSION_TYPES.WEDNESDAY);
-}
-
-function sendFridayReminders() {
-  sendMissingSubmissionReminders_(SUBMISSION_TYPES.FRIDAY);
-}
-
-function sendMissingSubmissionReminders_(submissionType) {
-  const settings = getSettingsMap_();
-  const enabled = String(settings['Reminder Email Enabled'] || 'No').trim();
-  const ccOwner = String(settings['Reminder CC Owner'] || 'No').trim();
-  const ownerEmail = String(settings['Owner Email'] || '').trim();
-
-  if (enabled !== 'Yes') {
-    SpreadsheetApp.getUi().alert('Reminder Email Enabled is not set to Yes in Settings.');
-    return;
-  }
-
-  const weekStartDate = getMondayDateString_(new Date());
-  const dashboard = getManagerDashboardData(weekStartDate);
-  const allRows = [].concat(dashboard.groups.gt3, dashboard.groups.cap, dashboard.groups.f1);
-
-  let missingRows = [];
-  if (submissionType === SUBMISSION_TYPES.MONDAY) missingRows = allRows.filter(r => r.monday === 'Missing');
-  else if (submissionType === SUBMISSION_TYPES.WEDNESDAY) missingRows = allRows.filter(r => r.wednesday === 'Missing');
-  else if (submissionType === SUBMISSION_TYPES.FRIDAY) missingRows = allRows.filter(r => r.friday === 'Missing');
-
-  let sentCount = 0;
-
-  missingRows.forEach(row => {
-    if (!row.emailAddress) return;
-
-    const subject = getReminderSubject_(submissionType);
-    const htmlBody = buildReminderEmailHtml_({
-      fullName: row.fullName,
-      group: row.group,
-      emailAddress: row.emailAddress,
-      weekStartDate: row.weekStartDate,
-      submissionType: submissionType
-    });
-
-    const mailOptions = {
-      to: row.emailAddress,
-      subject: subject,
-      htmlBody: htmlBody
-    };
-
-    if (ccOwner === 'Yes' && ownerEmail) {
-      mailOptions.cc = ownerEmail;
+    .hero-copy h1{
+      margin:0 0 8px;
+      font-size:36px;
+      line-height:1.05;
+    }
+    .hero-copy p{
+      margin:0;
+      color:#d1d5db;
+      line-height:1.6;
+      max-width:760px;
+    }
+    .main-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:24px;
+    }
+    .card{
+      background:#fff;
+      border:1px solid var(--kw-border);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card-head{
+      padding:20px 22px;
+      border-bottom:1px solid var(--kw-border);
+      background:#fff;
+    }
+    .card-head h2{
+      margin:0;
+      font-size:21px;
+      color:var(--kw-charcoal);
+    }
+    .card-body{padding:22px;}
+    .guide{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+    .guide-item{
+      border:1px solid var(--kw-border);
+      border-radius:16px;
+      background:#fafafa;
+      padding:14px 16px;
+    }
+    .guide-item strong{
+      display:block;
+      margin-bottom:5px;
+      color:var(--kw-red);
+      font-size:14px;
+    }
+    .guide-item span{
+      font-size:13px;
+      line-height:1.5;
+      color:#4b5563;
+    }
+    .grid-login{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:14px;
+      align-items:end;
+    }
+    .grid-form{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .field label{
+      font-size:13px;
+      font-weight:700;
+      color:var(--kw-charcoal-2);
+    }
+    .field input,.field select{
+      width:100%;
+      height:48px;
+      border:1px solid var(--kw-border);
+      border-radius:12px;
+      padding:0 14px;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+    }
+    .field input:focus,.field select:focus{
+      border-color:var(--kw-red);
+      box-shadow:0 0 0 3px rgba(176,28,46,0.12);
+    }
+    .field input[disabled]{
+      background:#f9fafb;
+      color:#6b7280;
+    }
+    .actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:12px;
+      margin-top:20px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:none;
+      border-radius:12px;
+      height:46px;
+      padding:0 18px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .btn-primary{
+      background:var(--kw-red);
+      color:#fff;
+    }
+    .btn-primary:hover{
+      background:var(--kw-red-dark);
+    }
+    .btn-secondary{
+      background:#e5e7eb;
+      color:#111827;
+    }
+    .pill-row{
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:var(--kw-charcoal);
+      color:#fff;
+      font-size:13px;
+      font-weight:700;
+    }
+    .pill.light{
+      background:#f3f4f6;
+      color:#374151;
+      border:1px solid #e5e7eb;
+    }
+    .note{
+      margin-top:10px;
+      font-size:12px;
+      color:#6b7280;
+      line-height:1.5;
+    }
+    .status{
+      margin-top:18px;
+      padding:14px 16px;
+      border-radius:14px;
+      display:none;
+      font-size:14px;
+      font-weight:700;
+    }
+    .status.ok{
+      display:block;
+      background:#ecfdf3;
+      color:var(--kw-success);
+      border:1px solid #bbf7d0;
+    }
+    .status.err{
+      display:block;
+      background:#fef2f2;
+      color:var(--kw-error);
+      border:1px solid #fecaca;
+    }
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--kw-border);
+      border-radius:16px;
+      background:#fff;
+      margin-top:16px;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+    }
+    table.monday-mode{
+      min-width:520px;
+    }
+    th{
+      background:var(--kw-charcoal);
+      color:#fff;
+      text-align:left;
+      padding:12px;
+      font-size:13px;
+      white-space:nowrap;
+    }
+    td{
+      border-bottom:1px solid var(--kw-border);
+      padding:10px 12px;
+      font-size:14px;
+      vertical-align:middle;
+    }
+    tr:nth-child(even) td{
+      background:#fcfcfd;
+    }
+    .num{
+      width:110px;
+      height:40px;
+      border:1px solid var(--kw-border);
+      border-radius:10px;
+      padding:0 10px;
+      text-align:center;
+      font-size:14px;
+    }
+    .hidden{
+      display:none !important;
+    }
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      padding:20px;
+    }
+    .overlay.show{
+      display:flex;
+    }
+    .modal{
+      width:100%;
+      max-width:460px;
+      background:#fff;
+      border-radius:22px;
+      box-shadow:0 24px 60px rgba(0,0,0,.22);
+      overflow:hidden;
+      border:1px solid #e5e7eb;
+    }
+    .modal-head{
+      background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
+      color:#fff;
+      padding:20px 24px;
+    }
+    .modal-head h3{
+      margin:0;
+      font-size:22px;
+    }
+    .modal-body{
+      padding:24px;
+      color:#1f2937;
+      line-height:1.6;
+    }
+    .modal-actions{
+      display:flex;
+      justify-content:flex-end;
+      padding:0 24px 24px;
+    }
+    .modal-btn{
+      border:none;
+      border-radius:12px;
+      height:44px;
+      padding:0 18px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      background:var(--kw-red);
+      color:#fff;
+    }
+    .footer-note{
+      text-align:center;
+      font-size:12px;
+      color:#6b7280;
+      margin-top:10px;
     }
 
-    MailApp.sendEmail(mailOptions);
-    sentCount++;
-  });
+    @media (max-width: 980px){
+      .guide{grid-template-columns:1fr 1fr}
+      .grid-login{grid-template-columns:1fr}
+      .grid-form{grid-template-columns:1fr}
+      .hero-top{flex-direction:column;align-items:flex-start}
+      .logo-wrap{width:96px;height:96px;min-width:96px}
+    }
 
-  SpreadsheetApp.getUi().alert(`${sentCount} reminder email(s) sent for ${submissionType}.`);
-}
-
-function getReminderSubject_(submissionType) {
-  const settings = getSettingsMap_();
-
-  if (submissionType === SUBMISSION_TYPES.MONDAY) {
-    return String(settings['Monday Reminder Subject'] || 'KW North Reminder | Monday Goals Outstanding');
-  }
-  if (submissionType === SUBMISSION_TYPES.WEDNESDAY) {
-    return String(settings['Wednesday Reminder Subject'] || 'KW North Reminder | Wednesday Check-In Outstanding');
-  }
-  return String(settings['Friday Reminder Subject'] || 'KW North Reminder | Friday Final Outstanding');
-}
-
-function buildReminderEmailHtml_(data) {
-  const settings = getSettingsMap_();
-  const webAppUrl = String(settings['Web App URL'] || '').trim();
-
-  const actionButton = webAppUrl
-    ? `
-      <div style="margin:24px 0 12px;">
-        <a href="${escapeHtml_(webAppUrl)}"
-           style="display:inline-block;background:#B01C2E;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:12px;font-weight:700;">
-          Open KW North Accountability
-        </a>
-      </div>
-      <div style="font-size:12px;color:#6b7280;word-break:break-all;">
-        ${escapeHtml_(webAppUrl)}
-      </div>
-    `
-    : '';
-
-  return `
-    <div style="margin:0;padding:24px;background:#f5f7fa;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
-      <div style="max-width:760px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:20px;overflow:hidden;">
-        <div style="background:linear-gradient(135deg,#1f2937 0%,#111827 100%);padding:24px 28px;color:#ffffff;">
-          <div style="font-size:28px;font-weight:700;line-height:1.1;">KW North Accountability</div>
-          <div style="margin-top:8px;font-size:14px;color:#d1d5db;">Submission reminder</div>
+    @media (max-width: 640px){
+      .guide{grid-template-columns:1fr}
+      .hero-copy h1{font-size:30px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div class="hero-top">
+        <div class="logo-wrap">
+          <img src="KW_LOGO-removebg-preview.png" alt="KW North Logo">
         </div>
-        <div style="padding:24px 28px;line-height:1.7;">
-          <p>Hi ${escapeHtml_(data.fullName)},</p>
-          <p>This is a reminder that your <strong>${escapeHtml_(data.submissionType)}</strong> submission is still outstanding for the week starting <strong>${escapeHtml_(data.weekStartDate)}</strong>.</p>
-          <p>Please log in to the KW North Accountability system and complete your submission.</p>
-          ${actionButton}
-          <div style="margin-top:20px;font-size:12px;color:#6b7280;">
-            This reminder was sent automatically by the KW North Accountability System.
+        <div class="hero-copy">
+          <h1>KW North Agent Accountability</h1>
+          <p>Professional weekly submission workflow for GT3, CAP Academy, and F1 Top Agents. Fast internal login with email only.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-head">
+          <h2>How it works</h2>
+        </div>
+        <div class="card-body">
+          <div class="guide">
+            <div class="guide-item"><strong>Step 1</strong><span>Enter your registered office email address.</span></div>
+            <div class="guide-item"><strong>Step 2</strong><span>Your group and accountability fields load automatically.</span></div>
+            <div class="guide-item"><strong>Step 3</strong><span>Wednesday and Friday can pull prior values from the same week.</span></div>
+            <div class="guide-item"><strong>Step 4</strong><span>Submit your update and receive confirmation once saved.</span></div>
           </div>
         </div>
       </div>
-    </div>
-  `;
-}
 
-function sendReviewEmail_(submission) {
-  const settings = getSettingsMap_();
-  const toEmail = String(settings['Owner Email'] || '').trim();
-  const secondEmail = String(settings['Second Notification Email'] || '').trim();
+      <div class="card" id="loginCard">
+        <div class="card-head"><h2>Agent Login</h2></div>
+        <div class="card-body">
+          <div class="grid-login">
+            <div class="field">
+              <label>Email Address</label>
+              <input type="email" id="loginEmail" placeholder="Enter your registered email address" autocomplete="email">
+            </div>
+            <button class="btn btn-primary" id="loginBtn">Continue</button>
+          </div>
 
-  if (!toEmail) throw new Error('Owner Email is blank in the Settings tab.');
-
-  const subject = `KW North Accountability | ${submission.agentName} | ${submission.submissionType} | ${submission.weekStartDate}`;
-  const htmlBody = buildReviewEmailHtml_(submission, 'Submission review email');
-
-  const mailOptions = {
-    to: toEmail,
-    subject: subject,
-    htmlBody: htmlBody
-  };
-
-  if (secondEmail) {
-    mailOptions.cc = secondEmail;
-  }
-
-  MailApp.sendEmail(mailOptions);
-}
-
-function sendAgentCopyEmail_(submission) {
-  const toEmail = String(submission.agentEmail || '').trim();
-  if (!toEmail) throw new Error('Agent email is blank on the agent record.');
-
-  const subject = `KW North Accountability Confirmation | ${submission.submissionType} | ${submission.weekStartDate}`;
-  const htmlBody = buildReviewEmailHtml_(submission, 'Your submission confirmation');
-
-  MailApp.sendEmail({
-    to: toEmail,
-    subject: subject,
-    htmlBody: htmlBody
-  });
-}
-
-function buildReviewEmailHtml_(submission, subtitle) {
-  const settings = getSettingsMap_();
-  const webAppUrl = String(settings['Web App URL'] || '').trim();
-
-  const dashboardButton = webAppUrl
-    ? `
-      <div style="margin:22px 0 6px;">
-        <a href="${escapeHtml_(webAppUrl)}"
-           style="display:inline-block;background:#1F2937;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:12px;font-weight:700;">
-          Open Manager Dashboard
-        </a>
-      </div>
-      <div style="font-size:12px;color:#6b7280;">Use the Outstanding Only filter to see who is still missing.</div>
-    `
-    : '';
-
-  const rowsHtml = submission.activities.map(item => {
-    const gapDisplay = item.gap === '' ? '-' : item.gap;
-    return `
-      <tr>
-        <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;">${escapeHtml_(item.activityName)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:center;">${item.goal}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:center;">${item.actual}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:center;">${gapDisplay}</td>
-      </tr>
-    `;
-  }).join('');
-
-  return `
-    <div style="margin:0;padding:24px;background:#f5f7fa;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
-      <div style="max-width:920px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:20px;overflow:hidden;">
-        <div style="background:linear-gradient(135deg,#1f2937 0%,#111827 100%);padding:24px 28px;color:#ffffff;">
-          <div style="font-size:28px;font-weight:700;line-height:1.1;">KW North Accountability</div>
-          <div style="margin-top:8px;font-size:14px;color:#d1d5db;">${escapeHtml_(subtitle)}</div>
-        </div>
-        <div style="padding:24px 28px;">
-          <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
-            <tr><td style="padding:6px 0;width:180px;font-weight:700;">Agent</td><td style="padding:6px 0;">${escapeHtml_(submission.agentName)}</td></tr>
-            <tr><td style="padding:6px 0;font-weight:700;">Agent ID</td><td style="padding:6px 0;">${escapeHtml_(submission.agentId)}</td></tr>
-            <tr><td style="padding:6px 0;font-weight:700;">Agent Email</td><td style="padding:6px 0;">${escapeHtml_(submission.agentEmail)}</td></tr>
-            <tr><td style="padding:6px 0;font-weight:700;">Group</td><td style="padding:6px 0;">${escapeHtml_(submission.group)}</td></tr>
-            <tr><td style="padding:6px 0;font-weight:700;">Submission Type</td><td style="padding:6px 0;">${escapeHtml_(submission.submissionType)}</td></tr>
-            <tr><td style="padding:6px 0;font-weight:700;">Week Start Date</td><td style="padding:6px 0;">${escapeHtml_(submission.weekStartDate)}</td></tr>
-            <tr><td style="padding:6px 0;font-weight:700;">Month</td><td style="padding:6px 0;">${escapeHtml_(submission.monthName)} ${submission.year}</td></tr>
-          </table>
-
-          <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;">
-            <thead>
-              <tr style="background:#b01c2e;color:#ffffff;">
-                <th style="padding:12px;text-align:left;">Activity</th>
-                <th style="padding:12px;text-align:center;">Goal</th>
-                <th style="padding:12px;text-align:center;">Actual</th>
-                <th style="padding:12px;text-align:center;">Gap</th>
-              </tr>
-            </thead>
-            <tbody>${rowsHtml}</tbody>
-          </table>
-
-          ${dashboardButton}
+          <div id="loginStatus" class="status"></div>
         </div>
       </div>
+
+      <div class="card hidden" id="formCard">
+        <div class="card-head"><h2>Weekly Submission</h2></div>
+        <div class="card-body">
+          <div class="grid-form">
+            <div class="field">
+              <label>Logged In Agent</label>
+              <input type="text" id="agentDisplay" disabled>
+            </div>
+            <div class="field">
+              <label>Submission Type</label>
+              <select id="submissionType"></select>
+            </div>
+            <div class="field">
+              <label>Week Start Date</label>
+              <input type="date" id="weekStartDate">
+            </div>
+            <div class="field">
+              <label>Today</label>
+              <input type="date" id="todayDate" disabled>
+            </div>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill" id="groupPill">Group</span>
+            <span class="pill light hidden" id="prefillPill">Weekly values loaded</span>
+          </div>
+
+          <div class="note">
+            Monday shows goal fields only. Wednesday and Friday show both goal and actual fields.
+          </div>
+
+          <div class="table-wrap">
+            <table id="submissionTable">
+              <thead>
+                <tr>
+                  <th>Activity</th>
+                  <th>Goal</th>
+                  <th id="actualHeader">Actual</th>
+                </tr>
+              </thead>
+              <tbody id="activityBody"></tbody>
+            </table>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+            <button class="btn btn-primary" id="saveBtn">Save Submission</button>
+          </div>
+
+          <div id="formStatus" class="status"></div>
+        </div>
+      </div>
+
+      <div class="footer-note">KW North Accountability System</div>
     </div>
-  `;
-}
-
-function sendManualTestReviewEmail() {
-  const settings = getSettingsMap_();
-  const toEmail = String(settings['Owner Email'] || '').trim();
-  if (!toEmail) {
-    SpreadsheetApp.getUi().alert('Owner Email is blank in Settings.');
-    return;
-  }
-
-  const fakeSubmission = {
-    agentId: 'A005',
-    agentName: 'Sample Test Agent',
-    agentEmail: 'sample.agent@example.com',
-    group: 'GT3',
-    submissionType: 'Friday Final',
-    weekStartDate: '2026-03-16',
-    monthName: 'March',
-    year: 2026,
-    activities: [
-      { activityId: 'GT3_01', activityName: 'Conversations', goal: 100, actual: 55, gap: -45 },
-      { activityId: 'GT3_02', activityName: 'Appointments', goal: 3, actual: 1, gap: -2 },
-      { activityId: 'GT3_03', activityName: 'Active listing', goal: 7, actual: 7, gap: 0 }
-    ]
-  };
-
-  sendReviewEmail_(fakeSubmission);
-  SpreadsheetApp.getUi().alert(`Test review email sent to ${toEmail}`);
-}
-
-function validateWorkbookStructure() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const settings = getSettingsMap_();
-
-  const requiredSheets = [
-    'Agents',
-    'Activities',
-    'Settings',
-    'Submissions_Raw',
-    'GT3_Weekly',
-    'GT3_Monthly',
-    'CAP_Weekly',
-    'CAP_Monthly',
-    'CAP_YTD',
-    'F1_Weekly',
-    'F1_Monthly',
-    'Manager_Dashboard'
-  ];
-
-  const missingSheets = requiredSheets.filter(name => !ss.getSheetByName(name));
-
-  const requiredSettings = [
-    'Market Centre',
-    'Owner Name',
-    'Owner Email',
-    'Default Year',
-    'Monday Label',
-    'Wednesday Label',
-    'Friday Label',
-    'GT3 Weekly Sheet Name',
-    'GT3 Monthly Sheet Name',
-    'CAP Weekly Sheet Name',
-    'CAP Monthly Sheet Name',
-    'CAP YTD Sheet Name',
-    'F1 Weekly Sheet Name',
-    'F1 Monthly Sheet Name',
-    'Raw Data Sheet Name',
-    'Agents Sheet Name',
-    'Activities Sheet Name'
-  ];
-
-  const missingSettings = requiredSettings.filter(key => !settings[key]);
-  const problems = [];
-
-  if (missingSheets.length) problems.push('Missing sheets:\n- ' + missingSheets.join('\n- '));
-  if (missingSettings.length) problems.push('Missing or blank settings:\n- ' + missingSettings.join('\n- '));
-
-  if (problems.length) {
-    SpreadsheetApp.getUi().alert('Workbook structure needs attention:\n\n' + problems.join('\n\n'));
-    return;
-  }
-
-  SpreadsheetApp.getUi().alert('Success. Your workbook structure is valid and ready for the next step.');
-}
-
-function rebuildAllReports() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  validateWorkbookStructureSilently_();
-  const rawRecords = getRawSubmissionRecords_();
-
-  clearReportDataOnly();
-
-  rebuildGT3Weekly_(ss, rawRecords);
-  rebuildGT3Monthly_(ss);
-  rebuildCAPWeekly_(ss, rawRecords);
-  rebuildCAPMonthly_(ss);
-  rebuildCAPYTD_(ss);
-  rebuildF1Weekly_(ss, rawRecords);
-  rebuildF1Monthly_(ss);
-
-  SpreadsheetApp.getUi().alert('All report tabs were rebuilt successfully.');
-}
-
-function clearReportDataOnly() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const reportSheets = [
-    'GT3_Weekly',
-    'GT3_Monthly',
-    'CAP_Weekly',
-    'CAP_Monthly',
-    'CAP_YTD',
-    'F1_Weekly',
-    'F1_Monthly'
-  ];
-
-  reportSheets.forEach(name => {
-    const sheet = ss.getSheetByName(name);
-    if (!sheet) return;
-    const lastRow = sheet.getLastRow();
-    const lastCol = sheet.getLastColumn();
-    if (lastRow > 1 && lastCol > 0) {
-      sheet.getRange(2, 1, lastRow - 1, lastCol).clearContent();
-    }
-  });
-}
-
-function clearRawSubmissionTestData() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const rawSheet = ss.getSheetByName('Submissions_Raw');
-  const lastRow = rawSheet.getLastRow();
-  const lastCol = rawSheet.getLastColumn();
-
-  if (lastRow > 1 && lastCol > 0) {
-    rawSheet.getRange(2, 1, lastRow - 1, lastCol).clearContent();
-  }
-
-  clearReportDataOnly();
-  SpreadsheetApp.getUi().alert('Raw submission test data and report data were cleared.');
-}
-
-function rebuildAllReportsSilently_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const rawRecords = getRawSubmissionRecords_();
-
-  clearReportDataOnlySilently_();
-
-  rebuildGT3Weekly_(ss, rawRecords);
-  rebuildGT3Monthly_(ss);
-  rebuildCAPWeekly_(ss, rawRecords);
-  rebuildCAPMonthly_(ss);
-  rebuildCAPYTD_(ss);
-  rebuildF1Weekly_(ss, rawRecords);
-  rebuildF1Monthly_(ss);
-}
-
-function clearReportDataOnlySilently_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const reportSheets = [
-    'GT3_Weekly',
-    'GT3_Monthly',
-    'CAP_Weekly',
-    'CAP_Monthly',
-    'CAP_YTD',
-    'F1_Weekly',
-    'F1_Monthly'
-  ];
-
-  reportSheets.forEach(name => {
-    const sheet = ss.getSheetByName(name);
-    if (!sheet) return;
-    const lastRow = sheet.getLastRow();
-    const lastCol = sheet.getLastColumn();
-    if (lastRow > 1 && lastCol > 0) {
-      sheet.getRange(2, 1, lastRow - 1, lastCol).clearContent();
-    }
-  });
-}
-
-function rebuildGT3Weekly_(ss, rawRecords) {
-  const sheet = ss.getSheetByName('GT3_Weekly');
-  if (!sheet) return;
-
-  const headers = getHeaderRow_(sheet);
-  const grouped = {};
-
-  rawRecords.filter(r => r.group === GROUPS.GT3).forEach(r => {
-    const key = [r.agentId, r.fullName, r.weekStartDate].join('||');
-    if (!grouped[key]) {
-      grouped[key] = {
-        'Agent ID': r.agentId,
-        'Full Name': r.fullName,
-        'Week Start Date': r.weekStartDate,
-        'Month Name': r.monthName,
-        'Year': r.year
-      };
-    }
-
-    const headerStem = GT3_ACTIVITY_MAP[r.activityName];
-    if (!headerStem) return;
-
-    if (r.submissionType === SUBMISSION_TYPES.MONDAY) grouped[key][`${headerStem} Goal`] = r.goal;
-    if (r.submissionType === SUBMISSION_TYPES.FRIDAY) {
-      grouped[key][`${headerStem} Actual`] = r.actual;
-      grouped[key][`${headerStem} Gap`] = r.gap;
-    }
-  });
-
-  writeObjectsToSheet_(sheet, headers, Object.values(grouped));
-}
-
-function rebuildGT3Monthly_(ss) {
-  const weeklySheet = ss.getSheetByName('GT3_Weekly');
-  const monthlySheet = ss.getSheetByName('GT3_Monthly');
-  if (!weeklySheet || !monthlySheet) return;
-
-  const weeklyRows = getDataAsObjects_(weeklySheet);
-  const headers = getHeaderRow_(monthlySheet);
-  const grouped = {};
-
-  weeklyRows.forEach(r => {
-    const key = [r['Agent ID'], r['Full Name'], r['Month Name'], r['Year']].join('||');
-    if (!grouped[key]) {
-      grouped[key] = {
-        'Agent ID': r['Agent ID'],
-        'Full Name': r['Full Name'],
-        'Month Name': r['Month Name'],
-        'Year': r['Year']
-      };
-    }
-
-    addNumber_(grouped[key], 'Conversations Goal Total', r['Conversations Goal']);
-    addNumber_(grouped[key], 'Conversations Actual Total', r['Conversations Actual']);
-    addNumber_(grouped[key], 'Conversations Gap Total', r['Conversations Gap']);
-    addNumber_(grouped[key], 'Appointments Goal Total', r['Appointments Goal']);
-    addNumber_(grouped[key], 'Appointments Actual Total', r['Appointments Actual']);
-    addNumber_(grouped[key], 'Appointments Gap Total', r['Appointments Gap']);
-    addNumber_(grouped[key], 'Active Listing Goal Total', r['Active Listing Goal']);
-    addNumber_(grouped[key], 'Active Listing Actual Total', r['Active Listing Actual']);
-    addNumber_(grouped[key], 'Active Listing Gap Total', r['Active Listing Gap']);
-  });
-
-  writeObjectsToSheet_(monthlySheet, headers, Object.values(grouped));
-}
-
-function rebuildCAPWeekly_(ss, rawRecords) {
-  const sheet = ss.getSheetByName('CAP_Weekly');
-  if (!sheet) return;
-
-  const headers = getHeaderRow_(sheet);
-  const weekNumberMap = buildWeekNumberMap_(rawRecords, GROUPS.CAP);
-  const grouped = {};
-
-  rawRecords.filter(r => r.group === GROUPS.CAP).forEach(r => {
-    const key = [r.agentId, r.fullName, r.weekStartDate].join('||');
-
-    if (!grouped[key]) {
-      grouped[key] = {
-        'Agent ID': r.agentId,
-        'Full Name': r.fullName,
-        'Week Start Date': r.weekStartDate,
-        'Month Name': r.monthName,
-        'Year': r.year,
-        'Week Number': weekNumberMap[`${r.monthName}||${r.year}||${r.weekStartDate}`] || ''
-      };
-    }
-
-    if (r.submissionType === SUBMISSION_TYPES.MONDAY) grouped[key][`${r.activityName} Goal`] = r.goal;
-    if (r.submissionType === SUBMISSION_TYPES.FRIDAY) {
-      grouped[key][`${r.activityName} Actual`] = r.actual;
-      grouped[key][`${r.activityName} Gap`] = r.gap;
-    }
-  });
-
-  writeObjectsToSheet_(sheet, headers, sortByWeekStart_(Object.values(grouped)));
-}
-
-function rebuildCAPMonthly_(ss) {
-  const weeklySheet = ss.getSheetByName('CAP_Weekly');
-  const monthlySheet = ss.getSheetByName('CAP_Monthly');
-  if (!weeklySheet || !monthlySheet) return;
-  rebuildMonthlyFromWeekly_(weeklySheet, monthlySheet);
-}
-
-function rebuildCAPYTD_(ss) {
-  const monthlySheet = ss.getSheetByName('CAP_Monthly');
-  const ytdSheet = ss.getSheetByName('CAP_YTD');
-  if (!monthlySheet || !ytdSheet) return;
-  rebuildYTDFromMonthly_(monthlySheet, ytdSheet);
-}
-
-function rebuildF1Weekly_(ss, rawRecords) {
-  const sheet = ss.getSheetByName('F1_Weekly');
-  if (!sheet) return;
-
-  const headers = getHeaderRow_(sheet);
-  const grouped = {};
-
-  rawRecords.filter(r => r.group === GROUPS.F1).forEach(r => {
-    const key = [r.agentId, r.fullName, r.weekStartDate].join('||');
-    if (!grouped[key]) {
-      grouped[key] = {
-        'Agent ID': r.agentId,
-        'Full Name': r.fullName,
-        'Week Start Date': r.weekStartDate,
-        'Month Name': r.monthName,
-        'Year': r.year
-      };
-    }
-
-    if (r.submissionType === SUBMISSION_TYPES.MONDAY) grouped[key][`${r.activityName} Goal`] = r.goal;
-    if (r.submissionType === SUBMISSION_TYPES.FRIDAY) {
-      grouped[key][`${r.activityName} Actual`] = r.actual;
-      grouped[key][`${r.activityName} Gap`] = r.gap;
-    }
-  });
-
-  writeObjectsToSheet_(sheet, headers, sortByWeekStart_(Object.values(grouped)));
-}
-
-function rebuildF1Monthly_(ss) {
-  const weeklySheet = ss.getSheetByName('F1_Weekly');
-  const monthlySheet = ss.getSheetByName('F1_Monthly');
-  if (!weeklySheet || !monthlySheet) return;
-  rebuildMonthlyFromWeekly_(weeklySheet, monthlySheet);
-}
-
-function rebuildMonthlyFromWeekly_(weeklySheet, monthlySheet) {
-  const weeklyRows = getDataAsObjects_(weeklySheet);
-  const headers = getHeaderRow_(monthlySheet);
-  const grouped = {};
-
-  weeklyRows.forEach(r => {
-    const key = [r['Agent ID'], r['Full Name'], r['Month Name'], r['Year']].join('||');
-    if (!grouped[key]) {
-      grouped[key] = {
-        'Agent ID': r['Agent ID'],
-        'Full Name': r['Full Name'],
-        'Month Name': r['Month Name'],
-        'Year': r['Year']
-      };
-    }
-
-    FULL_ACTIVITY_LIST.forEach(activity => {
-      addNumber_(grouped[key], `${activity} Goal Total`, r[`${activity} Goal`]);
-      addNumber_(grouped[key], `${activity} Actual Total`, r[`${activity} Actual`]);
-      addNumber_(grouped[key], `${activity} Gap Total`, r[`${activity} Gap`]);
-    });
-  });
-
-  writeObjectsToSheet_(monthlySheet, headers, Object.values(grouped));
-}
-
-function rebuildYTDFromMonthly_(monthlySheet, ytdSheet) {
-  const monthlyRows = getDataAsObjects_(monthlySheet);
-  const headers = getHeaderRow_(ytdSheet);
-  const grouped = {};
-
-  monthlyRows.forEach(r => {
-    const key = [r['Agent ID'], r['Full Name'], r['Year']].join('||');
-    if (!grouped[key]) {
-      grouped[key] = {
-        'Agent ID': r['Agent ID'],
-        'Full Name': r['Full Name'],
-        'Year': r['Year']
-      };
-    }
-
-    FULL_ACTIVITY_LIST.forEach(activity => {
-      addNumber_(grouped[key], `${activity} Goal YTD`, r[`${activity} Goal Total`]);
-      addNumber_(grouped[key], `${activity} Actual YTD`, r[`${activity} Actual Total`]);
-      addNumber_(grouped[key], `${activity} Gap YTD`, r[`${activity} Gap Total`]);
-    });
-  });
-
-  writeObjectsToSheet_(ytdSheet, headers, Object.values(grouped));
-}
-
-function addSampleGT3Data() {
-  const rawSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Submissions_Raw');
-  const agent = getAgentById_('A005') || getFirstAgentByGroup_(GROUPS.GT3);
-  if (!agent) {
-    SpreadsheetApp.getUi().alert('No GT3 test agent found in the Agents tab.');
-    return;
-  }
-
-  const weekStart = '2026-03-09';
-  const rows = [
-    buildRawRow_(agent, SUBMISSION_TYPES.MONDAY, weekStart, 'March', 3, 2026, 'GT3_01', 'Conversations', 100, 0, ''),
-    buildRawRow_(agent, SUBMISSION_TYPES.MONDAY, weekStart, 'March', 3, 2026, 'GT3_02', 'Appointments', 3, 0, ''),
-    buildRawRow_(agent, SUBMISSION_TYPES.MONDAY, weekStart, 'March', 3, 2026, 'GT3_03', 'Active listing', 7, 0, ''),
-    buildRawRow_(agent, SUBMISSION_TYPES.FRIDAY, weekStart, 'March', 3, 2026, 'GT3_01', 'Conversations', 100, 55, -45),
-    buildRawRow_(agent, SUBMISSION_TYPES.FRIDAY, weekStart, 'March', 3, 2026, 'GT3_02', 'Appointments', 3, 1, -2),
-    buildRawRow_(agent, SUBMISSION_TYPES.FRIDAY, weekStart, 'March', 3, 2026, 'GT3_03', 'Active listing', 7, 7, 0)
-  ];
-
-  appendRawRows_(rawSheet, rows);
-  SpreadsheetApp.getUi().alert('Sample GT3 data added to Submissions_Raw.');
-}
-
-function addSampleCAPData() {
-  const rawSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Submissions_Raw');
-  const agent = getAgentById_('A003') || getFirstAgentByGroup_(GROUPS.CAP);
-  if (!agent) {
-    SpreadsheetApp.getUi().alert('No CAP Academy test agent found in the Agents tab.');
-    return;
-  }
-
-  const weekStart = '2026-03-02';
-  const mondayGoals = {
-    'New Contacts Added': 10, 'Conversations (Real Estate)': 110, 'Drive Area': 2, 'Prop24 & Private Property': 5,
-    'Follow-up Touches': 4, 'Appointments Set (Listings)': 2, 'Appointments Held (Listings)': 2, 'Board Up': 2,
-    'Listings Active': 2, 'Buyers Viewing': 1, 'Agreements Signed (Listing)': 1, 'New Listings Taken': 2,
-    'Offers Written': 1, 'Offers Accepted': 1, 'Offer with FICA Submitted to TC': 1
-  };
-  const fridayActuals = {
-    'New Contacts Added': 2, 'Conversations (Real Estate)': 71, 'Drive Area': 3, 'Prop24 & Private Property': 5,
-    'Follow-up Touches': 2, 'Appointments Set (Listings)': 3, 'Appointments Held (Listings)': 3, 'Board Up': 0,
-    'Listings Active': 2, 'Buyers Viewing': 1, 'Agreements Signed (Listing)': 2, 'New Listings Taken': 2,
-    'Offers Written': 1, 'Offers Accepted': 1, 'Offer with FICA Submitted to TC': 1
-  };
-
-  const rows = [];
-  FULL_ACTIVITY_LIST.forEach((activity, i) => {
-    const activityId = `CAP_${String(i + 1).padStart(2, '0')}`;
-    const goal = mondayGoals[activity] || 0;
-    const actual = fridayActuals[activity] || 0;
-    rows.push(buildRawRow_(agent, SUBMISSION_TYPES.MONDAY, weekStart, 'March', 3, 2026, activityId, activity, goal, 0, ''));
-    rows.push(buildRawRow_(agent, SUBMISSION_TYPES.FRIDAY, weekStart, 'March', 3, 2026, activityId, activity, goal, actual, actual - goal));
-  });
-
-  appendRawRows_(rawSheet, rows);
-  SpreadsheetApp.getUi().alert('Sample CAP Academy data added to Submissions_Raw.');
-}
-
-function addSampleF1Data() {
-  const rawSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Submissions_Raw');
-  const agent = getAgentById_('A001') || getFirstAgentByGroup_(GROUPS.F1);
-  if (!agent) {
-    SpreadsheetApp.getUi().alert('No F1 Top Agents test agent found in the Agents tab.');
-    return;
-  }
-
-  const weekStart = '2026-02-09';
-  const mondayGoals = {
-    'New Contacts Added': 10, 'Conversations (Real Estate)': 10, 'Drive Area': 0, 'Prop24 & Private Property': 0,
-    'Follow-up Touches': 10, 'Appointments Set (Listings)': 4, 'Appointments Held (Listings)': 0, 'Board Up': 2,
-    'Listings Active': 4, 'Buyers Viewing': 4, 'Agreements Signed (Listing)': 2, 'New Listings Taken': 0,
-    'Offers Written': 0, 'Offers Accepted': 0, 'Offer with FICA Submitted to TC': 0
-  };
-  const fridayActuals = {
-    'New Contacts Added': 15, 'Conversations (Real Estate)': 8, 'Drive Area': 0, 'Prop24 & Private Property': 0,
-    'Follow-up Touches': 6, 'Appointments Set (Listings)': 2, 'Appointments Held (Listings)': 0, 'Board Up': 0,
-    'Listings Active': 0, 'Buyers Viewing': 7, 'Agreements Signed (Listing)': 1, 'New Listings Taken': 2,
-    'Offers Written': 2, 'Offers Accepted': 2, 'Offer with FICA Submitted to TC': 0
-  };
-
-  const rows = [];
-  FULL_ACTIVITY_LIST.forEach((activity, i) => {
-    const activityId = `F1_${String(i + 1).padStart(2, '0')}`;
-    const goal = mondayGoals[activity] || 0;
-    const actual = fridayActuals[activity] || 0;
-    rows.push(buildRawRow_(agent, SUBMISSION_TYPES.MONDAY, weekStart, 'February', 2, 2026, activityId, activity, goal, 0, ''));
-    rows.push(buildRawRow_(agent, SUBMISSION_TYPES.FRIDAY, weekStart, 'February', 2, 2026, activityId, activity, goal, actual, actual - goal));
-  });
-
-  appendRawRows_(rawSheet, rows);
-  SpreadsheetApp.getUi().alert('Sample F1 data added to Submissions_Raw.');
-}
-
-function buildRawRow_(agent, submissionType, weekStart, monthName, monthNumber, year, activityId, activityName, goal, actual, gap) {
-  return [
-    new Date(),
-    Utilities.getUuid(),
-    agent.agentId,
-    agent.firstName,
-    agent.surname,
-    agent.fullName,
-    agent.emailAddress,
-    agent.group,
-    submissionType,
-    weekStart,
-    weekStart,
-    monthName,
-    monthNumber,
-    year,
-    activityId,
-    activityName,
-    goal,
-    actual,
-    gap
-  ];
-}
-
-function appendRawRows_(rawSheet, rows) {
-  if (!rows.length) return;
-  rawSheet.getRange(rawSheet.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
-}
-
-function getActivitiesForGroup(groupName) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Activities');
-  if (!sheet) throw new Error('Activities sheet is missing.');
-
-  const data = sheet.getDataRange().getValues();
-  if (data.length < 2) return [];
-
-  const headers = data[0];
-  const rows = data.slice(1);
-  const index = buildHeaderIndex_(headers);
-
-  return rows
-    .filter(r =>
-      String(r[index['Group']] || '').trim() === groupName &&
-      String(r[index['Active']] || '').trim() === 'Yes'
-    )
-    .sort((a, b) => Number(a[index['Sort Order']] || 0) - Number(b[index['Sort Order']] || 0))
-    .map(r => ({
-      activityId: String(r[index['Activity ID']] || '').trim(),
-      activityName: String(r[index['Activity Name']] || '').trim(),
-      group: String(r[index['Group']] || '').trim(),
-      sortOrder: Number(r[index['Sort Order']] || 0)
-    }));
-}
-
-function getExistingSubmissionRowsMap_(agentId, weekStartDate, submissionType) {
-  const rawSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Submissions_Raw');
-  if (!rawSheet) throw new Error('Submissions_Raw sheet is missing.');
-
-  const data = rawSheet.getDataRange().getValues();
-  if (data.length < 2) return {};
-
-  const headers = data[0];
-  const rows = data.slice(1);
-  const index = buildHeaderIndex_(headers);
-  const map = {};
-
-  rows.forEach((row, i) => {
-    const rowAgentId = String(row[index['Agent ID']] || '').trim();
-    const rowSubmissionType = String(row[index['Submission Type']] || '').trim();
-    const rowWeekStartDate = formatDateForSheet_(row[index['Week Start Date']]);
-    const rowActivityId = String(row[index['Activity ID']] || '').trim();
-
-    if (
-      rowAgentId === agentId &&
-      rowSubmissionType === submissionType &&
-      rowWeekStartDate === weekStartDate &&
-      rowActivityId
-    ) {
-      map[rowActivityId] = i + 2;
-    }
-  });
-
-  return map;
-}
-
-function getFirstAgentByGroup_(groupName) {
-  const agents = getAgents_();
-  return agents.find(a => a.group === groupName && a.active === 'Yes') || null;
-}
-
-function getAgentById_(agentId) {
-  const agents = getAgents_();
-  return agents.find(a => a.agentId === agentId) || null;
-}
-
-function getAgents_() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Agents');
-  if (!sheet) throw new Error('Agents sheet is missing.');
-
-  const data = sheet.getDataRange().getValues();
-  if (data.length < 2) return [];
-
-  const headers = data[0];
-  const rows = data.slice(1);
-  const index = buildHeaderIndex_(headers);
-
-  return rows
-    .filter(r => String(r[index['Agent ID']] || '').trim() !== '')
-    .map(r => ({
-      agentId: String(r[index['Agent ID']] || '').trim(),
-      firstName: String(r[index['First Name']] || '').trim(),
-      surname: String(r[index['Surname']] || '').trim(),
-      fullName: String(r[index['Full Name']] || '').trim(),
-      emailAddress: String(r[index['Email Address']] || '').trim(),
-      group: String(r[index['Group']] || '').trim(),
-      active: String(r[index['Active']] || '').trim()
-    }));
-}
-
-function getRawSubmissionRecords_() {
-  const rawSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Submissions_Raw');
-  if (!rawSheet) throw new Error('Submissions_Raw sheet is missing.');
-
-  const data = rawSheet.getDataRange().getValues();
-  if (data.length < 2) return [];
-
-  const headers = data[0];
-  const rows = data.slice(1);
-  const index = buildHeaderIndex_(headers);
-
-  return rows
-    .filter(row => String(row[index['Agent ID']] || '').trim() !== '')
-    .map(row => ({
-      timestamp: row[index['Timestamp']],
-      submissionId: row[index['Submission ID']],
-      agentId: String(row[index['Agent ID']] || '').trim(),
-      firstName: String(row[index['First Name']] || '').trim(),
-      surname: String(row[index['Surname']] || '').trim(),
-      fullName: String(row[index['Full Name']] || '').trim(),
-      emailAddress: String(row[index['Email Address']] || '').trim(),
-      group: String(row[index['Group']] || '').trim(),
-      submissionType: String(row[index['Submission Type']] || '').trim(),
-      submissionDate: formatDateForSheet_(row[index['Submission Date']]),
-      weekStartDate: formatDateForSheet_(row[index['Week Start Date']]),
-      monthName: String(row[index['Month Name']] || '').trim(),
-      monthNumber: toNumber_(row[index['Month Number']]),
-      year: toNumber_(row[index['Year']]),
-      activityId: String(row[index['Activity ID']] || '').trim(),
-      activityName: String(row[index['Activity Name']] || '').trim(),
-      goal: toNumber_(row[index['Goal']]),
-      actual: toNumber_(row[index['Actual']]),
-      gap: row[index['Gap']] === '' ? '' : toNumber_(row[index['Gap']])
-    }));
-}
-
-function getSettingsMap_() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Settings');
-  if (!sheet) throw new Error('Settings sheet is missing.');
-
-  const data = sheet.getDataRange().getValues();
-  const map = {};
-
-  for (let i = 1; i < data.length; i++) {
-    const key = String(data[i][0] || '').trim();
-    const value = data[i][1];
-    if (key) map[key] = value;
-  }
-
-  return map;
-}
-
-function validateWorkbookStructureSilently_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const requiredSheets = [
-    'Agents',
-    'Activities',
-    'Settings',
-    'Submissions_Raw',
-    'GT3_Weekly',
-    'GT3_Monthly',
-    'CAP_Weekly',
-    'CAP_Monthly',
-    'CAP_YTD',
-    'F1_Weekly',
-    'F1_Monthly',
-    'Manager_Dashboard'
-  ];
-
-  requiredSheets.forEach(name => {
-    if (!ss.getSheetByName(name)) {
-      throw new Error(`Missing required sheet: ${name}`);
-    }
-  });
-}
-
-function buildHeaderIndex_(headers) {
-  const index = {};
-  headers.forEach((header, i) => {
-    index[String(header).trim()] = i;
-  });
-  return index;
-}
-
-function getHeaderRow_(sheet) {
-  if (!sheet) return [];
-  const lastCol = sheet.getLastColumn();
-  if (lastCol === 0) return [];
-  return sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
-}
-
-function getDataAsObjects_(sheet) {
-  const data = sheet.getDataRange().getValues();
-  if (data.length < 2) return [];
-
-  const headers = data[0];
-  const rows = data.slice(1);
-
-  return rows
-    .filter(row => row.some(cell => String(cell).trim() !== ''))
-    .map(row => {
-      const obj = {};
-      headers.forEach((header, i) => {
-        obj[header] = row[i];
+  </div>
+
+  <div id="successOverlay" class="overlay">
+    <div class="modal">
+      <div class="modal-head"><h3>Submission Successful</h3></div>
+      <div class="modal-body" id="successMessage">Your submission has been saved successfully.</div>
+      <div class="modal-actions">
+        <button class="modal-btn" id="closeSuccessBtn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_BASE_URL = "https://script.google.com/macros/s/AKfycbySmE1dJk53Ues_ZoNMTQL2HjncDRDMf1j1dUt4qDd5BbgugkP5nuZsFQzGHdPoP7-V6g/exec";
+
+    let loggedInAgent = null;
+    let currentActivities = [];
+    let isSubmitting = false;
+    let isLoggingIn = false;
+
+    function apiPost(action, payload = {}) {
+      return fetch(APPS_SCRIPT_BASE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action, payload })
+      }).then(async res => {
+        const data = await res.json();
+        if (!data.success) {
+          throw new Error(data.message || "Request failed.");
+        }
+        return data;
       });
-      return obj;
+    }
+
+    function setStatus(id, type, message) {
+      const box = document.getElementById(id);
+      box.className = "status";
+      box.textContent = "";
+      if (!type) return;
+      box.classList.add(type);
+      box.textContent = message;
+    }
+
+    function setButtonState(id, loading, loadingText, normalText) {
+      const btn = document.getElementById(id);
+      btn.disabled = loading;
+      btn.textContent = loading ? loadingText : normalText;
+      btn.style.opacity = loading ? "0.75" : "1";
+    }
+
+    function showActualColumn() {
+      document.getElementById("actualHeader").classList.remove("hidden");
+      document.querySelectorAll(".actual-cell").forEach(el => el.classList.remove("hidden"));
+      document.getElementById("submissionTable").classList.remove("monday-mode");
+    }
+
+    function hideActualColumn() {
+      document.getElementById("actualHeader").classList.add("hidden");
+      document.querySelectorAll(".actual-cell").forEach(el => el.classList.add("hidden"));
+      document.getElementById("submissionTable").classList.add("monday-mode");
+    }
+
+    function updateColumnVisibility() {
+      const submissionType = document.getElementById("submissionType").value;
+      if (submissionType === "Monday Goals") {
+        hideActualColumn();
+      } else {
+        showActualColumn();
+      }
+    }
+
+    function renderActivityRows() {
+      const body = document.getElementById("activityBody");
+      body.innerHTML = "";
+
+      currentActivities.forEach(activity => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${activity.activityName}</td>
+          <td>
+            <input class="num" type="number" min="0" step="1" id="goal_${activity.activityId}" value="0">
+          </td>
+          <td class="actual-cell">
+            <input class="num" type="number" min="0" step="1" id="actual_${activity.activityId}" value="0">
+          </td>
+        `;
+        body.appendChild(tr);
+      });
+
+      updateColumnVisibility();
+    }
+
+    function applyPrefill(data) {
+      const values = data.values || {};
+      const type = data.submissionType;
+      let pillText = "";
+
+      if (type === "Monday Goals") {
+        pillText = "Fresh Monday entry for this week.";
+      } else if (type === "Wednesday Check-In") {
+        pillText = "Wednesday pulled Monday goals where available.";
+      } else if (type === "Friday Final") {
+        pillText = "Friday pulled Monday goals and latest weekly actuals where available.";
+      }
+
+      currentActivities.forEach(activity => {
+        const item = values[activity.activityId] || { goal: 0, actual: 0 };
+        const goalEl = document.getElementById(`goal_${activity.activityId}`);
+        const actualEl = document.getElementById(`actual_${activity.activityId}`);
+        if (goalEl) goalEl.value = item.goal ?? 0;
+        if (actualEl) actualEl.value = item.actual ?? 0;
+      });
+
+      const prefillPill = document.getElementById("prefillPill");
+      prefillPill.textContent = pillText;
+      prefillPill.classList.remove("hidden");
+
+      updateColumnVisibility();
+    }
+
+    async function refreshPrefill() {
+      if (!loggedInAgent) return;
+
+      const submissionType = document.getElementById("submissionType").value;
+      const weekStartDate = document.getElementById("weekStartDate").value;
+
+      if (!submissionType || !weekStartDate) return;
+
+      try {
+        const data = await apiPost("getWeekPrefillData", {
+          agentId: loggedInAgent.agentId,
+          weekStartDate,
+          submissionType
+        });
+        applyPrefill(data);
+      } catch (error) {
+        setStatus("formStatus", "err", error.message || "Could not load weekly values.");
+      }
+    }
+
+    function showSuccessModal(message) {
+      document.getElementById("successMessage").textContent = message;
+      document.getElementById("successOverlay").classList.add("show");
+    }
+
+    function closeSuccessModal() {
+      document.getElementById("successOverlay").classList.remove("show");
+    }
+
+    function logoutAndReset() {
+      loggedInAgent = null;
+      currentActivities = [];
+      document.getElementById("loginCard").classList.remove("hidden");
+      document.getElementById("formCard").classList.add("hidden");
+      document.getElementById("loginEmail").value = "";
+      document.getElementById("activityBody").innerHTML = "";
+      document.getElementById("prefillPill").classList.add("hidden");
+      document.getElementById("actualHeader").classList.remove("hidden");
+      document.getElementById("submissionTable").classList.remove("monday-mode");
+      setStatus("loginStatus", "", "");
+      setStatus("formStatus", "", "");
+      closeSuccessModal();
+    }
+
+    async function handleLogin() {
+      if (isLoggingIn) return;
+
+      const email = document.getElementById("loginEmail").value.trim();
+
+      if (!email) {
+        setStatus("loginStatus", "err", "Please enter your registered email address.");
+        return;
+      }
+
+      try {
+        isLoggingIn = true;
+        setButtonState("loginBtn", true, "Checking...", "Continue");
+        setStatus("loginStatus", "", "");
+
+        const data = await apiPost("loginAgent", { email });
+
+        loggedInAgent = data.agent;
+        currentActivities = data.activities || [];
+
+        try {
+          localStorage.setItem("kwNorthLastEmail", email);
+        } catch (_) {}
+
+        document.getElementById("loginCard").classList.add("hidden");
+        document.getElementById("formCard").classList.remove("hidden");
+        document.getElementById("agentDisplay").value = `${loggedInAgent.fullName} (${loggedInAgent.emailAddress})`;
+
+        const submissionTypeSelect = document.getElementById("submissionType");
+        submissionTypeSelect.innerHTML = "";
+        (data.submissionTypes || []).forEach(type => {
+          const option = document.createElement("option");
+          option.value = type;
+          option.textContent = type;
+          submissionTypeSelect.appendChild(option);
+        });
+
+        document.getElementById("todayDate").value = data.today;
+        document.getElementById("weekStartDate").value = data.mondayDate;
+        document.getElementById("groupPill").textContent = `Group: ${loggedInAgent.group}`;
+
+        renderActivityRows();
+        await refreshPrefill();
+      } catch (error) {
+        setStatus("loginStatus", "err", error.message || "Login failed.");
+      } finally {
+        isLoggingIn = false;
+        setButtonState("loginBtn", false, "Checking...", "Continue");
+      }
+    }
+
+    async function handleSave() {
+      if (isSubmitting) return;
+
+      if (!loggedInAgent) {
+        setStatus("formStatus", "err", "Please log in first.");
+        return;
+      }
+
+      const submissionType = document.getElementById("submissionType").value;
+      const weekStartDate = document.getElementById("weekStartDate").value;
+
+      if (!weekStartDate) {
+        setStatus("formStatus", "err", "Please select the week start date.");
+        return;
+      }
+
+      const values = {};
+      currentActivities.forEach(activity => {
+        const goalEl = document.getElementById(`goal_${activity.activityId}`);
+        const actualEl = document.getElementById(`actual_${activity.activityId}`);
+
+        values[activity.activityId] = {
+          goal: Number(goalEl ? goalEl.value : 0),
+          actual: submissionType === "Monday Goals" ? 0 : Number(actualEl ? actualEl.value : 0)
+        };
+      });
+
+      try {
+        isSubmitting = true;
+        setButtonState("saveBtn", true, "Saving...", "Save Submission");
+        setStatus("formStatus", "", "");
+
+        const data = await apiPost("submitWebAppForm", {
+          agentId: loggedInAgent.agentId,
+          submissionType,
+          weekStartDate,
+          values
+        });
+
+        setStatus("formStatus", "ok", `${data.message} Agent: ${data.agentName}. Group: ${data.group}.`);
+        showSuccessModal(`Submission saved successfully for ${data.agentName}.`);
+        await refreshPrefill();
+      } catch (error) {
+        setStatus("formStatus", "err", error.message || "Something went wrong while saving.");
+      } finally {
+        isSubmitting = false;
+        setButtonState("saveBtn", false, "Saving...", "Save Submission");
+      }
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", handleLogin);
+    document.getElementById("saveBtn").addEventListener("click", handleSave);
+    document.getElementById("logoutBtn").addEventListener("click", logoutAndReset);
+    document.getElementById("closeSuccessBtn").addEventListener("click", closeSuccessModal);
+    document.getElementById("submissionType").addEventListener("change", async () => {
+      updateColumnVisibility();
+      await refreshPrefill();
     });
-}
-
-function writeObjectsToSheet_(sheet, headers, objects) {
-  if (!objects || !objects.length) return;
-  const values = objects.map(obj =>
-    headers.map(header => obj[header] !== undefined ? obj[header] : '')
-  );
-  sheet.getRange(2, 1, values.length, headers.length).setValues(values);
-}
-
-function formatDateForSheet_(value) {
-  if (!value) return '';
-  const tz = Session.getScriptTimeZone();
-
-  if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value)) {
-    return Utilities.formatDate(value, tz, 'yyyy-MM-dd');
-  }
-
-  const d = new Date(value);
-  if (!isNaN(d)) return Utilities.formatDate(d, tz, 'yyyy-MM-dd');
-  return String(value);
-}
-
-function formatDateForInput_(value) {
-  return Utilities.formatDate(new Date(value), Session.getScriptTimeZone(), 'yyyy-MM-dd');
-}
-
-function getMondayDateString_(dateObj) {
-  const d = new Date(dateObj);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
-  return Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-}
-
-function addNumber_(obj, key, value) {
-  obj[key] = toNumber_(obj[key]) + toNumber_(value);
-}
-
-function toNumber_(value) {
-  if (value === '' || value === null || value === undefined) return 0;
-  const n = Number(value);
-  return isNaN(n) ? 0 : n;
-}
-
-function buildWeekNumberMap_(rawRecords, groupName) {
-  const map = {};
-  const monthGroups = {};
-
-  rawRecords
-    .filter(r => r.group === groupName && r.weekStartDate)
-    .forEach(r => {
-      const monthKey = `${r.monthName}||${r.year}`;
-      if (!monthGroups[monthKey]) monthGroups[monthKey] = new Set();
-      monthGroups[monthKey].add(r.weekStartDate);
+    document.getElementById("weekStartDate").addEventListener("change", refreshPrefill);
+    document.getElementById("loginEmail").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") handleLogin();
     });
 
-  Object.keys(monthGroups).forEach(monthKey => {
-    const weekStarts = Array.from(monthGroups[monthKey]).sort();
-    weekStarts.forEach((weekStart, i) => {
-      map[`${monthKey}||${weekStart}`] = i + 1;
-    });
-  });
-
-  return map;
-}
-
-function sortByWeekStart_(rows) {
-  return rows.sort((a, b) => {
-    const agentA = String(a['Full Name'] || '');
-    const agentB = String(b['Full Name'] || '');
-    if (agentA < agentB) return -1;
-    if (agentA > agentB) return 1;
-
-    const dateA = String(a['Week Start Date'] || '');
-    const dateB = String(b['Week Start Date'] || '');
-    if (dateA < dateB) return -1;
-    if (dateA > dateB) return 1;
-
-    return 0;
-  });
-}
-
-function escapeHtml_(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function normalizeName_(value) {
-  return String(value || '').trim().toLowerCase();
-}
+    try {
+      const lastEmail = localStorage.getItem("kwNorthLastEmail");
+      if (lastEmail) document.getElementById("loginEmail").value = lastEmail;
+    } catch (_) {}
+  </script>
+</body>
+</html>

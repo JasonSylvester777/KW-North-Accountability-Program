@@ -292,11 +292,11 @@
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:760px;
+      min-width:860px;
     }
 
     table.monday-mode{
-      min-width:520px;
+      min-width:620px;
     }
 
     th{
@@ -317,16 +317,6 @@
 
     tr:nth-child(even) td{
       background:#fcfcfd;
-    }
-
-    .num{
-      width:110px;
-      height:40px;
-      border:1px solid var(--kw-border);
-      border-radius:10px;
-      padding:0 10px;
-      text-align:center;
-      font-size:14px;
     }
 
     .hidden{
@@ -400,7 +390,6 @@
       margin-top:10px;
     }
 
-    /* Mobile portrait activity cards */
     .mobile-activity-list{
       display:none;
       margin-top:16px;
@@ -446,21 +435,85 @@
       color:#6b7280;
     }
 
-    .activity-mini-field input{
+    .stepper{
+      display:flex;
+      align-items:center;
+      gap:8px;
       width:100%;
-      height:42px;
+    }
+
+    .stepper-btn{
+      width:34px;
+      min-width:34px;
+      height:34px;
+      border:1px solid #d1d5db;
+      border-radius:10px;
+      background:#f9fafb;
+      color:#374151;
+      font-size:18px;
+      font-weight:700;
+      line-height:1;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:.18s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .stepper-btn:hover{
+      background:#f3f4f6;
+      border-color:#9ca3af;
+    }
+
+    .stepper-btn:active{
+      transform:scale(.97);
+    }
+
+    .stepper-btn:focus{
+      outline:none;
+      border-color:var(--kw-red);
+      box-shadow:0 0 0 3px rgba(176,28,46,0.12);
+    }
+
+    .stepper-btn.plus{
+      background:#fff7f8;
+      color:var(--kw-red);
+      border-color:#efc5cb;
+    }
+
+    .stepper-btn.plus:hover{
+      background:#fdecef;
+      border-color:#d99aa4;
+    }
+
+    .stepper-btn.minus:hover{
+      background:#f3f4f6;
+    }
+
+    .stepper-input{
+      width:72px;
+      height:40px;
       border:1px solid var(--kw-border);
       border-radius:10px;
-      padding:0 10px;
+      padding:0 8px;
       text-align:center;
       font-size:14px;
       outline:none;
       background:#fff;
+      -moz-appearance:textfield;
     }
 
-    .activity-mini-field input:focus{
+    .stepper-input:focus{
       border-color:var(--kw-red);
       box-shadow:0 0 0 3px rgba(176,28,46,0.12);
+    }
+
+    .stepper-input::-webkit-outer-spin-button,
+    .stepper-input::-webkit-inner-spin-button{
+      -webkit-appearance:none;
+      margin:0;
     }
 
     @media (max-width: 980px){
@@ -491,6 +544,17 @@
 
       .actions .btn{
         width:100%;
+      }
+
+      .stepper-btn{
+        width:36px;
+        min-width:36px;
+        height:36px;
+      }
+
+      .stepper-input{
+        width:78px;
+        height:42px;
       }
     }
   </style>
@@ -676,21 +740,68 @@
       }
     }
 
-    function createLinkedInput(id, value = 0) {
+    function sanitizeNumber(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num) || num < 0) return 0;
+      return Math.floor(num);
+    }
+
+    function syncLinkedInputs(id, value, sourceEl = null) {
+      const safeValue = sanitizeNumber(value);
+      document.querySelectorAll(`[data-sync-id="${id}"]`).forEach(el => {
+        if (el !== sourceEl) el.value = safeValue;
+      });
+      return safeValue;
+    }
+
+    function changeLinkedValue(id, delta) {
+      const currentEl = document.querySelector(`[data-sync-id="${id}"]`);
+      const current = sanitizeNumber(currentEl ? currentEl.value : 0);
+      const next = Math.max(0, current + delta);
+      syncLinkedInputs(id, next);
+    }
+
+    function createStepperInput(id, value = 0) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "stepper";
+
+      const minusBtn = document.createElement("button");
+      minusBtn.type = "button";
+      minusBtn.className = "stepper-btn minus";
+      minusBtn.textContent = "−";
+      minusBtn.setAttribute("aria-label", "Decrease value");
+      minusBtn.addEventListener("click", () => changeLinkedValue(id, -1));
+
       const input = document.createElement("input");
       input.type = "number";
       input.min = "0";
       input.step = "1";
-      input.value = value;
+      input.value = sanitizeNumber(value);
+      input.className = "stepper-input";
+      input.setAttribute("data-sync-id", id);
 
       input.addEventListener("input", () => {
-        document.querySelectorAll(`[data-sync-id="${id}"]`).forEach(el => {
-          if (el !== input) el.value = input.value;
-        });
+        const clean = syncLinkedInputs(id, input.value, input);
+        if (String(input.value) !== String(clean)) input.value = clean;
       });
 
-      input.setAttribute("data-sync-id", id);
-      return input;
+      input.addEventListener("blur", () => {
+        const clean = syncLinkedInputs(id, input.value, input);
+        input.value = clean;
+      });
+
+      const plusBtn = document.createElement("button");
+      plusBtn.type = "button";
+      plusBtn.className = "stepper-btn plus";
+      plusBtn.textContent = "+";
+      plusBtn.setAttribute("aria-label", "Increase value");
+      plusBtn.addEventListener("click", () => changeLinkedValue(id, 1));
+
+      wrapper.appendChild(minusBtn);
+      wrapper.appendChild(input);
+      wrapper.appendChild(plusBtn);
+
+      return wrapper;
     }
 
     function renderActivityRows() {
@@ -710,15 +821,11 @@
         tdActivity.textContent = activity.activityName;
 
         const tdGoal = document.createElement("td");
-        const goalInputDesktop = createLinkedInput(goalId, 0);
-        goalInputDesktop.className = "num";
-        tdGoal.appendChild(goalInputDesktop);
+        tdGoal.appendChild(createStepperInput(goalId, 0));
 
         const tdActual = document.createElement("td");
         tdActual.className = "actual-cell";
-        const actualInputDesktop = createLinkedInput(actualId, 0);
-        actualInputDesktop.className = "num";
-        tdActual.appendChild(actualInputDesktop);
+        tdActual.appendChild(createStepperInput(actualId, 0));
 
         tr.appendChild(tdActivity);
         tr.appendChild(tdGoal);
@@ -739,17 +846,15 @@
         goalWrap.className = "activity-mini-field";
         const goalLabel = document.createElement("label");
         goalLabel.textContent = "Goal";
-        const goalInputMobile = createLinkedInput(goalId, 0);
         goalWrap.appendChild(goalLabel);
-        goalWrap.appendChild(goalInputMobile);
+        goalWrap.appendChild(createStepperInput(goalId, 0));
 
         const actualWrap = document.createElement("div");
         actualWrap.className = "activity-mini-field mobile-actual-field";
         const actualLabel = document.createElement("label");
         actualLabel.textContent = "Actual";
-        const actualInputMobile = createLinkedInput(actualId, 0);
         actualWrap.appendChild(actualLabel);
-        actualWrap.appendChild(actualInputMobile);
+        actualWrap.appendChild(createStepperInput(actualId, 0));
 
         grid.appendChild(goalWrap);
         grid.appendChild(actualWrap);
@@ -763,14 +868,12 @@
     }
 
     function setSyncedValue(id, value) {
-      document.querySelectorAll(`[data-sync-id="${id}"]`).forEach(el => {
-        el.value = value ?? 0;
-      });
+      syncLinkedInputs(id, value);
     }
 
     function getSyncedValue(id) {
       const el = document.querySelector(`[data-sync-id="${id}"]`);
-      return Number(el ? el.value : 0);
+      return sanitizeNumber(el ? el.value : 0);
     }
 
     function applyPrefill(data) {

@@ -11,664 +11,126 @@
       --kw-charcoal:#1F2937;
       --kw-charcoal-2:#374151;
       --kw-border:#E5E7EB;
-      --kw-white:#FFFFFF;
-      --kw-bg:#F5F7FA;
       --kw-success:#166534;
       --kw-error:#991B1B;
       --shadow:0 18px 45px rgba(15,23,42,.12);
       --radius-xl:24px;
-      --radius-lg:18px;
     }
-
     *{box-sizing:border-box}
     html,body{margin:0;padding:0}
-    body{
-      font-family:Arial,Helvetica,sans-serif;
-      background:linear-gradient(135deg,#f5f7fa 0%,#eef2f7 100%);
-      color:var(--kw-charcoal);
-    }
-
+    body{font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#f5f7fa 0%,#eef2f7 100%);color:var(--kw-charcoal);}
     .page{max-width:1200px;margin:0 auto;padding:28px 20px 40px;}
-
-    .hero{
-      background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
-      color:#fff;
-      border-radius:30px;
-      box-shadow:var(--shadow);
-      padding:28px 30px;
-      position:relative;
-      overflow:hidden;
-      margin-bottom:24px;
-    }
-
-    .hero::after{
-      content:"";
-      position:absolute;
-      right:-60px;
-      top:-60px;
-      width:210px;
-      height:210px;
-      border-radius:50%;
-      background:rgba(176,28,46,0.18);
-    }
-
-    .hero-top{
-      display:flex;
-      align-items:center;
-      gap:18px;
-      position:relative;
-      z-index:1;
-    }
-
-    .logo-wrap{
-      width:110px;
-      min-width:110px;
-      height:110px;
-      background:#ffffff;
-      border:1px solid rgba(255,255,255,0.35);
-      border-radius:24px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:12px;
-      box-shadow:0 10px 24px rgba(15,23,42,.14);
-    }
-
-    .logo-wrap img{
-      max-width:92%;
-      max-height:92%;
-      object-fit:contain;
-      display:block;
-    }
-
-    .hero-copy h1{
-      margin:0 0 8px;
-      font-size:36px;
-      line-height:1.05;
-    }
-
-    .hero-copy p{
-      margin:0;
-      color:#d1d5db;
-      line-height:1.6;
-      max-width:760px;
-    }
-
-    .main-grid{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:24px;
-    }
-
-    .card{
-      background:#fff;
-      border:1px solid var(--kw-border);
-      border-radius:var(--radius-xl);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-
-    .card-head{
-      padding:20px 22px;
-      border-bottom:1px solid var(--kw-border);
-      background:#fff;
-    }
-
-    .card-head h2{
-      margin:0;
-      font-size:21px;
-      color:var(--kw-charcoal);
-    }
-
+    .hero{background:linear-gradient(135deg,#1f2937 0%, #111827 100%);color:#fff;border-radius:30px;box-shadow:var(--shadow);padding:28px 30px;position:relative;overflow:hidden;margin-bottom:24px;}
+    .hero::after{content:"";position:absolute;right:-60px;top:-60px;width:210px;height:210px;border-radius:50%;background:rgba(176,28,46,0.18);}
+    .hero-top{display:flex;align-items:center;gap:18px;position:relative;z-index:1;}
+    .logo-wrap{width:110px;min-width:110px;height:110px;background:#ffffff;border:1px solid rgba(255,255,255,0.35);border-radius:24px;display:flex;align-items:center;justify-content:center;padding:12px;box-shadow:0 10px 24px rgba(15,23,42,.14);}
+    .logo-wrap img{max-width:92%;max-height:92%;object-fit:contain;display:block;}
+    .hero-copy h1{margin:0 0 8px;font-size:36px;line-height:1.05;}
+    .hero-copy p{margin:0;color:#d1d5db;line-height:1.6;max-width:760px;}
+    .main-grid{display:grid;grid-template-columns:1fr;gap:24px;}
+    .card{background:#fff;border:1px solid var(--kw-border);border-radius:var(--radius-xl);box-shadow:var(--shadow);overflow:hidden;}
+    .card-head{padding:20px 22px;border-bottom:1px solid var(--kw-border);background:#fff;}
+    .card-head h2{margin:0;font-size:21px;color:var(--kw-charcoal);}
     .card-body{padding:22px;}
-
-    .guide{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:14px;
-    }
-
-    .guide-item{
-      border:1px solid var(--kw-border);
-      border-radius:16px;
-      background:#fafafa;
-      padding:14px 16px;
-    }
-
-    .guide-item strong{
-      display:block;
-      margin-bottom:5px;
-      color:var(--kw-red);
-      font-size:14px;
-    }
-
-    .guide-item span{
-      font-size:13px;
-      line-height:1.5;
-      color:#4b5563;
-    }
-
-    .grid-login{
-      display:grid;
-      grid-template-columns:1fr auto;
-      gap:14px;
-      align-items:end;
-    }
-
-    .grid-form{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:14px;
-    }
-
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-
-    .field label{
-      font-size:13px;
-      font-weight:700;
-      color:var(--kw-charcoal-2);
-    }
-
-    .field input,.field select{
-      width:100%;
-      height:48px;
-      border:1px solid var(--kw-border);
-      border-radius:12px;
-      padding:0 14px;
-      font-size:14px;
-      outline:none;
-      background:#fff;
-    }
-
-    .field input:focus,.field select:focus{
-      border-color:var(--kw-red);
-      box-shadow:0 0 0 3px rgba(176,28,46,0.12);
-    }
-
-    .field input[disabled]{
-      background:#f9fafb;
-      color:#6b7280;
-    }
-
-    .actions{
-      display:flex;
-      justify-content:flex-end;
-      gap:12px;
-      margin-top:20px;
-      flex-wrap:wrap;
-    }
-
-    .btn{
-      border:none;
-      border-radius:12px;
-      height:46px;
-      padding:0 18px;
-      font-size:14px;
-      font-weight:700;
-      cursor:pointer;
-      transition:.2s ease;
-    }
-
-    .btn-primary{
-      background:var(--kw-red);
-      color:#fff;
-    }
-
-    .btn-primary:hover{
-      background:var(--kw-red-dark);
-    }
-
-    .btn-secondary{
-      background:#e5e7eb;
-      color:#111827;
-    }
-
-    .pill-row{
-      margin-top:16px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      padding:10px 14px;
-      border-radius:999px;
-      background:var(--kw-charcoal);
-      color:#fff;
-      font-size:13px;
-      font-weight:700;
-    }
-
-    .pill.light{
-      background:#f3f4f6;
-      color:#374151;
-      border:1px solid #e5e7eb;
-    }
-
-    .note{
-      margin-top:10px;
-      font-size:12px;
-      color:#6b7280;
-      line-height:1.5;
-    }
-
-    .status{
-      margin-top:18px;
-      padding:14px 16px;
-      border-radius:14px;
-      display:none;
-      font-size:14px;
-      font-weight:700;
-    }
-
-    .status.ok{
-      display:block;
-      background:#ecfdf3;
-      color:var(--kw-success);
-      border:1px solid #bbf7d0;
-    }
-
-    .status.err{
-      display:block;
-      background:#fef2f2;
-      color:var(--kw-error);
-      border:1px solid #fecaca;
-    }
-
-    .table-wrap{
-      overflow:auto;
-      border:1px solid var(--kw-border);
-      border-radius:16px;
-      background:#fff;
-      margin-top:16px;
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      min-width:860px;
-    }
-
-    table.monday-mode{
-      min-width:620px;
-    }
-
-    th{
-      background:var(--kw-charcoal);
-      color:#fff;
-      text-align:left;
-      padding:12px;
-      font-size:13px;
-      white-space:nowrap;
-    }
-
-    td{
-      border-bottom:1px solid var(--kw-border);
-      padding:10px 12px;
-      font-size:14px;
-      vertical-align:middle;
-    }
-
-    tr:nth-child(even) td{
-      background:#fcfcfd;
-    }
-
-    .hidden{
-      display:none !important;
-    }
-
-    .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,.45);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:9999;
-      padding:20px;
-    }
-
-    .overlay.show{
-      display:flex;
-    }
-
-    .modal{
-      width:100%;
-      max-width:460px;
-      background:#fff;
-      border-radius:22px;
-      box-shadow:0 24px 60px rgba(0,0,0,.22);
-      overflow:hidden;
-      border:1px solid #e5e7eb;
-    }
-
-    .modal-head{
-      background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
-      color:#fff;
-      padding:20px 24px;
-    }
-
-    .modal-head h3{
-      margin:0;
-      font-size:22px;
-    }
-
-    .modal-body{
-      padding:24px;
-      color:#1f2937;
-      line-height:1.6;
-    }
-
-    .modal-actions{
-      display:flex;
-      justify-content:flex-end;
-      padding:0 24px 24px;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .modal-btn{
-      border:none;
-      border-radius:12px;
-      height:44px;
-      padding:0 18px;
-      font-size:14px;
-      font-weight:700;
-      cursor:pointer;
-      background:var(--kw-red);
-      color:#fff;
-    }
-
-    .modal-btn.secondary{
-      background:#e5e7eb;
-      color:#111827;
-    }
-
-    .modal-btn.secondary:hover{
-      background:#dbe0e6;
-    }
-
-    .success-summary-wrap{
-      margin-top:18px;
-      border:1px solid #e5e7eb;
-      border-radius:18px;
-      overflow:hidden;
-      background:#ffffff;
-    }
-
-    .success-summary-card{
-      width:100%;
-      max-width:760px;
-      margin:0 auto;
-      background:#ffffff;
-      color:#1f2937;
-    }
-
-    .success-summary-head{
-      background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
-      color:#ffffff;
-      padding:18px 20px;
-    }
-
-    .success-summary-head h4{
-      margin:0;
-      font-size:22px;
-      line-height:1.1;
-    }
-
-    .success-summary-head p{
-      margin:8px 0 0;
-      color:#d1d5db;
-      font-size:13px;
-      line-height:1.5;
-    }
-
-    .success-summary-body{
-      padding:18px 20px 20px;
-      background:#ffffff;
-    }
-
-    .success-meta{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:10px 16px;
-      margin-bottom:16px;
-      font-size:13px;
-    }
-
-    .success-meta div{
-      padding:10px 12px;
-      border:1px solid #e5e7eb;
-      border-radius:12px;
-      background:#fafafa;
-    }
-
-    .success-meta strong{
-      display:block;
-      margin-bottom:4px;
-      font-size:12px;
-      color:#6b7280;
-      text-transform:uppercase;
-      letter-spacing:.04em;
-    }
-
-    .success-summary-table{
-      width:100%;
-      border-collapse:collapse;
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-      overflow:hidden;
-      font-size:13px;
-    }
-
-    .success-summary-table th{
-      background:#b01c2e;
-      color:#ffffff;
-      padding:10px 12px;
-      text-align:left;
-      font-size:12px;
-    }
-
-    .success-summary-table td{
-      padding:10px 12px;
-      border-bottom:1px solid #e5e7eb;
-      vertical-align:top;
-    }
-
-    .success-summary-table td.num-cell{
-      text-align:center;
-      white-space:nowrap;
-    }
-
-    .footer-note{
-      text-align:center;
-      font-size:12px;
-      color:#6b7280;
-      margin-top:10px;
-    }
-
-    .mobile-activity-list{
-      display:none;
-      margin-top:16px;
-      gap:12px;
-      flex-direction:column;
-    }
-
-    .activity-card{
-      border:1px solid var(--kw-border);
-      border-radius:16px;
-      background:#fff;
-      padding:14px;
-      box-shadow:0 8px 18px rgba(15,23,42,.05);
-    }
-
-    .activity-card-title{
-      font-size:14px;
-      font-weight:700;
-      color:var(--kw-charcoal);
-      margin-bottom:12px;
-      line-height:1.4;
-    }
-
-    .activity-card-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
-
-    .activity-card-grid.one-col{
-      grid-template-columns:1fr;
-    }
-
-    .activity-mini-field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-
-    .activity-mini-field label{
-      font-size:12px;
-      font-weight:700;
-      color:#6b7280;
-    }
-
-    .stepper{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      width:100%;
-    }
-
-    .stepper-btn{
-      width:34px;
-      min-width:34px;
-      height:34px;
-      border:1px solid #d1d5db;
-      border-radius:10px;
-      background:#f9fafb;
-      color:#374151;
-      font-size:18px;
-      font-weight:700;
-      line-height:1;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      transition:.18s ease;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .stepper-btn:hover{
-      background:#f3f4f6;
-      border-color:#9ca3af;
-    }
-
-    .stepper-btn:active{
-      transform:scale(.97);
-    }
-
-    .stepper-btn:focus{
-      outline:none;
-      border-color:var(--kw-red);
-      box-shadow:0 0 0 3px rgba(176,28,46,0.12);
-    }
-
-    .stepper-btn.plus{
-      background:#fff7f8;
-      color:var(--kw-red);
-      border-color:#efc5cb;
-    }
-
-    .stepper-btn.plus:hover{
-      background:#fdecef;
-      border-color:#d99aa4;
-    }
-
-    .stepper-btn.minus:hover{
-      background:#f3f4f6;
-    }
-
-    .stepper-input{
-      width:72px;
-      height:40px;
-      border:1px solid var(--kw-border);
-      border-radius:10px;
-      padding:0 8px;
-      text-align:center;
-      font-size:14px;
-      outline:none;
-      background:#fff;
-      -moz-appearance:textfield;
-    }
-
-    .stepper-input:focus{
-      border-color:var(--kw-red);
-      box-shadow:0 0 0 3px rgba(176,28,46,0.12);
-    }
-
-    .stepper-input::-webkit-outer-spin-button,
-    .stepper-input::-webkit-inner-spin-button{
-      -webkit-appearance:none;
-      margin:0;
-    }
-
-    @media (max-width: 980px){
+    .guide{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+    .guide-item{border:1px solid var(--kw-border);border-radius:16px;background:#fafafa;padding:14px 16px;}
+    .guide-item strong{display:block;margin-bottom:5px;color:var(--kw-red);font-size:14px;}
+    .guide-item span{font-size:13px;line-height:1.5;color:#4b5563;}
+    .grid-login{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end;}
+    .grid-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+    .field{display:flex;flex-direction:column;gap:6px;}
+    .field label{font-size:13px;font-weight:700;color:var(--kw-charcoal-2);}
+    .field input,.field select{width:100%;height:48px;border:1px solid var(--kw-border);border-radius:12px;padding:0 14px;font-size:14px;outline:none;background:#fff;}
+    .field input:focus,.field select:focus{border-color:var(--kw-red);box-shadow:0 0 0 3px rgba(176,28,46,0.12);}
+    .field input[disabled]{background:#f9fafb;color:#6b7280;}
+    .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px;flex-wrap:wrap;}
+    .btn{border:none;border-radius:12px;height:46px;padding:0 18px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s ease;}
+    .btn-primary{background:var(--kw-red);color:#fff;}
+    .btn-primary:hover{background:var(--kw-red-dark);}
+    .btn-secondary{background:#e5e7eb;color:#111827;}
+    .pill-row{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;}
+    .pill{display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--kw-charcoal);color:#fff;font-size:13px;font-weight:700;}
+    .pill.light{background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;}
+    .note{margin-top:10px;font-size:12px;color:#6b7280;line-height:1.5;}
+    .status{margin-top:18px;padding:14px 16px;border-radius:14px;display:none;font-size:14px;font-weight:700;}
+    .status.ok{display:block;background:#ecfdf3;color:var(--kw-success);border:1px solid #bbf7d0;}
+    .status.err{display:block;background:#fef2f2;color:var(--kw-error);border:1px solid #fecaca;}
+    .table-wrap{overflow:auto;border:1px solid var(--kw-border);border-radius:16px;background:#fff;margin-top:16px;}
+    table{width:100%;border-collapse:collapse;min-width:860px;}
+    table.monday-mode{min-width:620px;}
+    th{background:var(--kw-charcoal);color:#fff;text-align:left;padding:12px;font-size:13px;white-space:nowrap;}
+    td{border-bottom:1px solid var(--kw-border);padding:10px 12px;font-size:14px;vertical-align:middle;}
+    tr:nth-child(even) td{background:#fcfcfd;}
+    .hidden{display:none !important;}
+    .overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;}
+    .overlay.show{display:flex;}
+    .modal{width:100%;max-width:900px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.22);overflow:hidden;border:1px solid #e5e7eb;}
+    .modal-head{background:linear-gradient(135deg,#1f2937 0%, #111827 100%);color:#fff;padding:20px 24px;}
+    .modal-head h3{margin:0;font-size:22px;}
+    .modal-body{padding:24px;color:#1f2937;line-height:1.6;}
+    .modal-actions{display:flex;justify-content:flex-end;padding:0 24px 24px;gap:10px;flex-wrap:wrap;}
+    .modal-btn{border:none;border-radius:12px;height:44px;padding:0 18px;font-size:14px;font-weight:700;cursor:pointer;background:var(--kw-red);color:#fff;}
+    .modal-btn.secondary{background:#e5e7eb;color:#111827;}
+    .success-summary-wrap{margin-top:18px;border:1px solid #e5e7eb;border-radius:18px;background:#ffffff;overflow:visible;}
+    .success-summary-card{width:100%;max-width:100%;background:#ffffff;color:#1f2937;}
+    .success-summary-head{background:linear-gradient(135deg,#1f2937 0%, #111827 100%);color:#ffffff;padding:18px 20px;}
+    .success-summary-head h4{margin:0;font-size:22px;line-height:1.1;}
+    .success-summary-head p{margin:8px 0 0;color:#d1d5db;font-size:13px;line-height:1.5;}
+    .success-summary-body{padding:18px 20px 20px;background:#ffffff;}
+    .success-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px;font-size:13px;}
+    .success-meta div{padding:14px 16px;border:1px solid #e5e7eb;border-radius:22px;background:#fafafa;min-height:90px;display:flex;flex-direction:column;justify-content:center;}
+    .success-meta strong{display:block;margin-bottom:8px;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;}
+    .success-table-shell{border:1px solid #e5e7eb;border-radius:24px;overflow:hidden;background:#fff;}
+    .success-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
+    .success-summary-table th{background:#b01c2e;color:#ffffff;padding:14px 16px;text-align:left;font-size:14px;}
+    .success-summary-table td{padding:16px;border-bottom:1px solid #e5e7eb;vertical-align:middle;background:#fff;font-size:13px;}
+    .success-summary-table tr:last-child td{border-bottom:none;}
+    .success-summary-table td.num-cell,.success-summary-table th.num-cell{text-align:center;white-space:nowrap;}
+    .success-summary-table th.activity-col,.success-summary-table td.activity-col{width:46%;}
+    .success-summary-table.monday-only th.activity-col,.success-summary-table.monday-only td.activity-col{width:70%;}
+    .footer-note{text-align:center;font-size:12px;color:#6b7280;margin-top:10px;}
+    .mobile-activity-list{display:none;margin-top:16px;gap:12px;flex-direction:column;}
+    .activity-card{border:1px solid var(--kw-border);border-radius:16px;background:#fff;padding:14px;box-shadow:0 8px 18px rgba(15,23,42,.05);}
+    .activity-card-title{font-size:14px;font-weight:700;color:var(--kw-charcoal);margin-bottom:12px;line-height:1.4;}
+    .activity-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .activity-card-grid.one-col{grid-template-columns:1fr;}
+    .activity-mini-field{display:flex;flex-direction:column;gap:6px;}
+    .activity-mini-field label{font-size:12px;font-weight:700;color:#6b7280;}
+    .stepper{display:flex;align-items:center;gap:8px;width:100%;}
+    .stepper-btn{width:34px;min-width:34px;height:34px;border:1px solid #d1d5db;border-radius:10px;background:#f9fafb;color:#374151;font-size:18px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.18s ease;user-select:none;-webkit-tap-highlight-color: transparent;}
+    .stepper-btn.plus{background:#fff7f8;color:var(--kw-red);border-color:#efc5cb;}
+    .stepper-input{width:72px;height:40px;border:1px solid var(--kw-border);border-radius:10px;padding:0 8px;text-align:center;font-size:14px;outline:none;background:#fff;-moz-appearance:textfield;}
+    .stepper-input::-webkit-outer-spin-button,.stepper-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+    .export-stage{position:fixed;left:-99999px;top:0;width:900px;padding:24px;background:#ffffff;z-index:-1;}
+    @media (max-width:980px){
       .guide{grid-template-columns:1fr 1fr}
       .grid-login{grid-template-columns:1fr}
       .grid-form{grid-template-columns:1fr}
       .hero-top{flex-direction:column;align-items:flex-start}
       .logo-wrap{width:96px;height:96px;min-width:96px}
     }
-
-    @media (max-width: 640px){
+    @media (max-width:768px){
+      .table-wrap{display:none;}
+      .mobile-activity-list{display:flex;}
+      .actions{justify-content:stretch;}
+      .actions .btn{width:100%;}
+      .stepper-btn{width:36px;min-width:36px;height:36px;}
+      .stepper-input{width:78px;height:42px;}
+    }
+    @media (max-width:640px){
       .page{padding:16px 12px 28px}
       .guide{grid-template-columns:1fr}
       .hero{padding:22px 18px;border-radius:24px}
       .hero-copy h1{font-size:30px}
       .card-head{padding:16px 18px}
       .card-body{padding:18px}
-      .note{font-size:11px}
       .success-meta{grid-template-columns:1fr}
       .modal{max-width:100%}
       .modal-body{padding:18px}
       .modal-actions{padding:0 18px 18px}
       .modal-actions .modal-btn{width:100%}
-    }
-
-    @media (max-width: 768px){
-      .table-wrap{
-        display:none;
-      }
-
-      .mobile-activity-list{
-        display:flex;
-      }
-
-      .actions{
-        justify-content:stretch;
-      }
-
-      .actions .btn{
-        width:100%;
-      }
-
-      .stepper-btn{
-        width:36px;
-        min-width:36px;
-        height:36px;
-      }
-
-      .stepper-input{
-        width:78px;
-        height:42px;
-      }
+      .success-summary-head h4{font-size:18px;}
+      .success-summary-table th,.success-summary-table td{padding:12px 10px;font-size:12px;}
     }
   </style>
 </head>
@@ -676,9 +138,7 @@
   <div class="page">
     <div class="hero">
       <div class="hero-top">
-        <div class="logo-wrap">
-          <img src="KW_LOGO-removebg-preview.png" alt="KW North Logo">
-        </div>
+        <div class="logo-wrap"><img src="KW_LOGO-removebg-preview.png" alt="KW North Logo"></div>
         <div class="hero-copy">
           <h1>KW North Agent Accountability</h1>
           <p>Professional weekly submission workflow for GT3, CAP Academy, and F1 Top Agents. Fast internal login with email only.</p>
@@ -688,9 +148,7 @@
 
     <div class="main-grid">
       <div class="card">
-        <div class="card-head">
-          <h2>How it works</h2>
-        </div>
+        <div class="card-head"><h2>How it works</h2></div>
         <div class="card-body">
           <div class="guide">
             <div class="guide-item"><strong>Step 1</strong><span>Enter your registered office email address.</span></div>
@@ -711,7 +169,6 @@
             </div>
             <button class="btn btn-primary" id="loginBtn">Continue</button>
           </div>
-
           <div id="loginStatus" class="status"></div>
         </div>
       </div>
@@ -720,22 +177,10 @@
         <div class="card-head"><h2>Weekly Submission</h2></div>
         <div class="card-body">
           <div class="grid-form">
-            <div class="field">
-              <label>Logged In Agent</label>
-              <input type="text" id="agentDisplay" disabled>
-            </div>
-            <div class="field">
-              <label>Submission Type</label>
-              <select id="submissionType"></select>
-            </div>
-            <div class="field">
-              <label>Week Start Date</label>
-              <input type="date" id="weekStartDate">
-            </div>
-            <div class="field">
-              <label>Today</label>
-              <input type="date" id="todayDate" disabled>
-            </div>
+            <div class="field"><label>Logged In Agent</label><input type="text" id="agentDisplay" disabled></div>
+            <div class="field"><label>Submission Type</label><select id="submissionType"></select></div>
+            <div class="field"><label>Week Start Date</label><input type="date" id="weekStartDate"></div>
+            <div class="field"><label>Today</label><input type="date" id="todayDate" disabled></div>
           </div>
 
           <div class="pill-row">
@@ -743,19 +188,11 @@
             <span class="pill light hidden" id="prefillPill">Weekly values loaded</span>
           </div>
 
-          <div class="note">
-            Monday shows goal fields only. Wednesday and Friday show both goal and actual fields. Friday starts from your Wednesday actuals where available.
-          </div>
+          <div class="note">Monday shows goal fields only. Wednesday and Friday show both goal and actual fields. Friday starts from your Wednesday actuals where available.</div>
 
           <div class="table-wrap">
             <table id="submissionTable">
-              <thead>
-                <tr>
-                  <th>Activity</th>
-                  <th>Goal</th>
-                  <th id="actualHeader">Actual</th>
-                </tr>
-              </thead>
+              <thead><tr><th>Activity</th><th>Goal</th><th id="actualHeader">Actual</th></tr></thead>
               <tbody id="activityBody"></tbody>
             </table>
           </div>
@@ -776,11 +213,10 @@
   </div>
 
   <div id="successOverlay" class="overlay">
-    <div class="modal" style="max-width:860px;">
+    <div class="modal">
       <div class="modal-head"><h3>Submission Successful</h3></div>
       <div class="modal-body">
         <div id="successMessage">Your submission has been saved successfully.</div>
-
         <div class="success-summary-wrap">
           <div class="success-summary-card" id="successSummaryCard">
             <div class="success-summary-head">
@@ -789,17 +225,7 @@
             </div>
             <div class="success-summary-body">
               <div class="success-meta" id="successMeta"></div>
-              <table class="success-summary-table">
-                <thead>
-                  <tr id="successSummaryHeaderRow">
-                    <th>Activity</th>
-                    <th id="successGoalHeader" style="text-align:center;">Goal</th>
-                    <th id="successActualHeader" style="text-align:center;">Actual</th>
-                    <th id="successGapHeader" style="text-align:center;">Gap</th>
-                  </tr>
-                </thead>
-                <tbody id="successActivityBody"></tbody>
-              </table>
+              <div class="success-table-shell" id="successTableShell"></div>
             </div>
           </div>
         </div>
@@ -811,10 +237,11 @@
     </div>
   </div>
 
+  <div id="exportStage" class="export-stage" aria-hidden="true"></div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     const APPS_SCRIPT_BASE_URL = "https://script.google.com/macros/s/AKfycbySmE1dJk53Ues_ZoNMTQL2HjncDRDMf1j1dUt4qDd5BbgugkP5nuZsFQzGHdPoP7-V6g/exec";
-
     let loggedInAgent = null;
     let currentActivities = [];
     let isSubmitting = false;
@@ -828,9 +255,7 @@
         body: JSON.stringify({ action, payload })
       }).then(async res => {
         const data = await res.json();
-        if (!data.success) {
-          throw new Error(data.message || "Request failed.");
-        }
+        if (!data.success) throw new Error(data.message || "Request failed.");
         return data;
       });
     }
@@ -848,7 +273,6 @@
       const btn = document.getElementById(id);
       btn.disabled = loading;
       btn.textContent = loading ? loadingText : normalText;
-      btn.style.opacity = loading ? "0.75" : "1";
     }
 
     function isMondayMode() {
@@ -859,7 +283,6 @@
       document.getElementById("actualHeader").classList.remove("hidden");
       document.querySelectorAll(".actual-cell").forEach(el => el.classList.remove("hidden"));
       document.getElementById("submissionTable").classList.remove("monday-mode");
-
       document.querySelectorAll(".mobile-actual-field").forEach(el => el.classList.remove("hidden"));
       document.querySelectorAll(".activity-card-grid").forEach(el => el.classList.remove("one-col"));
     }
@@ -868,18 +291,11 @@
       document.getElementById("actualHeader").classList.add("hidden");
       document.querySelectorAll(".actual-cell").forEach(el => el.classList.add("hidden"));
       document.getElementById("submissionTable").classList.add("monday-mode");
-
       document.querySelectorAll(".mobile-actual-field").forEach(el => el.classList.add("hidden"));
       document.querySelectorAll(".activity-card-grid").forEach(el => el.classList.add("one-col"));
     }
 
-    function updateColumnVisibility() {
-      if (isMondayMode()) {
-        hideActualColumn();
-      } else {
-        showActualColumn();
-      }
-    }
+    function updateColumnVisibility() { isMondayMode() ? hideActualColumn() : showActualColumn(); }
 
     function sanitizeNumber(value) {
       const num = Number(value);
@@ -898,8 +314,7 @@
     function changeLinkedValue(id, delta) {
       const currentEl = document.querySelector(`[data-sync-id="${id}"]`);
       const current = sanitizeNumber(currentEl ? currentEl.value : 0);
-      const next = Math.max(0, current + delta);
-      syncLinkedInputs(id, next);
+      syncLinkedInputs(id, Math.max(0, current + delta));
     }
 
     function createStepperInput(id, value = 0) {
@@ -908,9 +323,8 @@
 
       const minusBtn = document.createElement("button");
       minusBtn.type = "button";
-      minusBtn.className = "stepper-btn minus";
+      minusBtn.className = "stepper-btn";
       minusBtn.textContent = "−";
-      minusBtn.setAttribute("aria-label", "Decrease value");
       minusBtn.addEventListener("click", () => changeLinkedValue(id, -1));
 
       const input = document.createElement("input");
@@ -920,35 +334,24 @@
       input.value = sanitizeNumber(value);
       input.className = "stepper-input";
       input.setAttribute("data-sync-id", id);
-
-      input.addEventListener("input", () => {
-        const clean = syncLinkedInputs(id, input.value, input);
-        if (String(input.value) !== String(clean)) input.value = clean;
-      });
-
-      input.addEventListener("blur", () => {
-        const clean = syncLinkedInputs(id, input.value, input);
-        input.value = clean;
-      });
+      input.addEventListener("input", () => { input.value = syncLinkedInputs(id, input.value, input); });
+      input.addEventListener("blur", () => { input.value = syncLinkedInputs(id, input.value, input); });
 
       const plusBtn = document.createElement("button");
       plusBtn.type = "button";
       plusBtn.className = "stepper-btn plus";
       plusBtn.textContent = "+";
-      plusBtn.setAttribute("aria-label", "Increase value");
       plusBtn.addEventListener("click", () => changeLinkedValue(id, 1));
 
       wrapper.appendChild(minusBtn);
       wrapper.appendChild(input);
       wrapper.appendChild(plusBtn);
-
       return wrapper;
     }
 
     function renderActivityRows() {
       const body = document.getElementById("activityBody");
       const mobileList = document.getElementById("mobileActivityList");
-
       body.innerHTML = "";
       mobileList.innerHTML = "";
 
@@ -957,61 +360,43 @@
         const actualId = `actual_${activity.activityId}`;
 
         const tr = document.createElement("tr");
-
         const tdActivity = document.createElement("td");
         tdActivity.textContent = activity.activityName;
-
         const tdGoal = document.createElement("td");
         tdGoal.appendChild(createStepperInput(goalId, 0));
-
         const tdActual = document.createElement("td");
         tdActual.className = "actual-cell";
         tdActual.appendChild(createStepperInput(actualId, 0));
-
-        tr.appendChild(tdActivity);
-        tr.appendChild(tdGoal);
-        tr.appendChild(tdActual);
+        tr.append(tdActivity, tdGoal, tdActual);
         body.appendChild(tr);
 
         const card = document.createElement("div");
         card.className = "activity-card";
-
         const title = document.createElement("div");
         title.className = "activity-card-title";
         title.textContent = activity.activityName;
-
         const grid = document.createElement("div");
         grid.className = "activity-card-grid";
 
         const goalWrap = document.createElement("div");
         goalWrap.className = "activity-mini-field";
-        const goalLabel = document.createElement("label");
-        goalLabel.textContent = "Goal";
-        goalWrap.appendChild(goalLabel);
+        goalWrap.innerHTML = "<label>Goal</label>";
         goalWrap.appendChild(createStepperInput(goalId, 0));
 
         const actualWrap = document.createElement("div");
         actualWrap.className = "activity-mini-field mobile-actual-field";
-        const actualLabel = document.createElement("label");
-        actualLabel.textContent = "Actual";
-        actualWrap.appendChild(actualLabel);
+        actualWrap.innerHTML = "<label>Actual</label>";
         actualWrap.appendChild(createStepperInput(actualId, 0));
 
-        grid.appendChild(goalWrap);
-        grid.appendChild(actualWrap);
-
-        card.appendChild(title);
-        card.appendChild(grid);
+        grid.append(goalWrap, actualWrap);
+        card.append(title, grid);
         mobileList.appendChild(card);
       });
 
       updateColumnVisibility();
     }
 
-    function setSyncedValue(id, value) {
-      syncLinkedInputs(id, value);
-    }
-
+    function setSyncedValue(id, value) { syncLinkedInputs(id, value); }
     function getSyncedValue(id) {
       const el = document.querySelector(`[data-sync-id="${id}"]`);
       return sanitizeNumber(el ? el.value : 0);
@@ -1020,15 +405,11 @@
     function applyPrefill(data) {
       const values = data.values || {};
       const type = data.submissionType;
-      let pillText = "";
+      let pillText = "Weekly values loaded";
 
-      if (type === "Monday Goals") {
-        pillText = "Fresh Monday entry for this week.";
-      } else if (type === "Wednesday Check-In") {
-        pillText = "Wednesday pulled Monday goals where available.";
-      } else if (type === "Friday Final") {
-        pillText = "Friday pulled Monday goals and latest weekly actuals where available.";
-      }
+      if (type === "Monday Goals") pillText = "Fresh Monday entry for this week.";
+      else if (type === "Wednesday Check-In") pillText = "Wednesday pulled Monday goals where available.";
+      else if (type === "Friday Final") pillText = "Friday pulled Monday goals and latest weekly actuals where available.";
 
       currentActivities.forEach(activity => {
         const item = values[activity.activityId] || { goal: 0, actual: 0 };
@@ -1039,16 +420,13 @@
       const prefillPill = document.getElementById("prefillPill");
       prefillPill.textContent = pillText;
       prefillPill.classList.remove("hidden");
-
       updateColumnVisibility();
     }
 
     async function refreshPrefill() {
       if (!loggedInAgent) return;
-
       const submissionType = document.getElementById("submissionType").value;
       const weekStartDate = document.getElementById("weekStartDate").value;
-
       if (!submissionType || !weekStartDate) return;
 
       try {
@@ -1065,66 +443,49 @@
 
     function escapeHtml(value) {
       return String(value == null ? "" : value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
+
+    function renderSuccessTable(submission) {
+      const isMondaySubmission = String(submission?.submissionType || "") === "Monday Goals";
+      const rows = (submission?.activities || []).map(item => {
+        const goal = sanitizeNumber(item.goal);
+        const actual = sanitizeNumber(item.actual);
+        const gap = Number(item.gap === "" || item.gap == null ? (actual - goal) : item.gap);
+
+        if (isMondaySubmission) {
+          return `<tr><td class="activity-col">${escapeHtml(item.activityName || "")}</td><td class="num-cell">${goal}</td></tr>`;
+        }
+        return `<tr><td class="activity-col">${escapeHtml(item.activityName || "")}</td><td class="num-cell">${goal}</td><td class="num-cell">${actual}</td><td class="num-cell">${gap}</td></tr>`;
+      }).join("");
+
+      if (isMondaySubmission) {
+        return `<table class="success-summary-table monday-only"><thead><tr><th class="activity-col">Activity</th><th class="num-cell">Goal</th></tr></thead><tbody>${rows}</tbody></table>`;
+      }
+      return `<table class="success-summary-table"><thead><tr><th class="activity-col">Activity</th><th class="num-cell">Goal</th><th class="num-cell">Actual</th><th class="num-cell">Gap</th></tr></thead><tbody>${rows}</tbody></table>`;
     }
 
     function buildSuccessSummaryCard(submission) {
       const meta = document.getElementById("successMeta");
-      const body = document.getElementById("successActivityBody");
       const subtitle = document.getElementById("successSummarySubtitle");
-      const actualHeader = document.getElementById("successActualHeader");
-      const gapHeader = document.getElementById("successGapHeader");
+      const tableShell = document.getElementById("successTableShell");
 
       if (!submission) {
         meta.innerHTML = "";
-        body.innerHTML = "";
         subtitle.textContent = "Submission summary ready for WhatsApp sharing.";
-        actualHeader.style.display = "";
-        gapHeader.style.display = "";
+        tableShell.innerHTML = "";
         return;
       }
 
-      const isMondaySubmission = String(submission.submissionType || "") === "Monday Goals";
-
       subtitle.textContent = `${submission.submissionType} · Week of ${submission.weekStartDate}`;
-
       meta.innerHTML = `
         <div><strong>Agent</strong>${escapeHtml(submission.agentName || "")}</div>
         <div><strong>Group</strong>${escapeHtml(submission.group || "")}</div>
         <div><strong>Submission</strong>${escapeHtml(submission.submissionType || "")}</div>
         <div><strong>Week Start</strong>${escapeHtml(submission.weekStartDate || "")}</div>
       `;
-
-      actualHeader.style.display = isMondaySubmission ? "none" : "";
-      gapHeader.style.display = isMondaySubmission ? "none" : "";
-
-      body.innerHTML = (submission.activities || []).map(item => {
-        const goal = sanitizeNumber(item.goal);
-        const actual = sanitizeNumber(item.actual);
-        const gap = Number(item.gap === "" || item.gap === null || typeof item.gap === "undefined" ? (actual - goal) : item.gap);
-
-        if (isMondaySubmission) {
-          return `
-            <tr>
-              <td>${escapeHtml(item.activityName || "")}</td>
-              <td class="num-cell">${goal}</td>
-            </tr>
-          `;
-        }
-
-        return `
-          <tr>
-            <td>${escapeHtml(item.activityName || "")}</td>
-            <td class="num-cell">${goal}</td>
-            <td class="num-cell">${actual}</td>
-            <td class="num-cell">${gap}</td>
-          </tr>
-        `;
-      }).join("");
+      tableShell.innerHTML = renderSuccessTable(submission);
     }
 
     function showSuccessModal(message, submission = null) {
@@ -1143,20 +504,29 @@
 
       const button = document.getElementById("downloadImageBtn");
       const originalText = button.textContent;
+      const exportStage = document.getElementById("exportStage");
 
       try {
         button.disabled = true;
         button.textContent = "Preparing image...";
+        exportStage.innerHTML = "";
 
-        if (typeof html2canvas !== "function") {
-          throw new Error("Image download library did not load.");
-        }
+        const clone = card.cloneNode(true);
+        clone.style.width = "852px";
+        clone.style.maxWidth = "852px";
+        clone.style.margin = "0";
+        clone.style.borderRadius = "0";
+        exportStage.appendChild(clone);
 
-        const canvas = await html2canvas(card, {
+        const canvas = await html2canvas(clone, {
           backgroundColor: "#ffffff",
           scale: 2,
           useCORS: true,
-          logging: false
+          logging: false,
+          width: 852,
+          windowWidth: 852,
+          scrollX: 0,
+          scrollY: 0
         });
 
         const link = document.createElement("a");
@@ -1167,6 +537,7 @@
         document.body.appendChild(link);
         link.click();
         link.remove();
+        exportStage.innerHTML = "";
       } catch (error) {
         setStatus("formStatus", "err", "The image could not be downloaded. Please refresh the page and try again.");
       } finally {
@@ -1194,13 +565,8 @@
 
     async function handleLogin() {
       if (isLoggingIn) return;
-
       const email = document.getElementById("loginEmail").value.trim();
-
-      if (!email) {
-        setStatus("loginStatus", "err", "Please enter your registered email address.");
-        return;
-      }
+      if (!email) return setStatus("loginStatus", "err", "Please enter your registered email address.");
 
       try {
         isLoggingIn = true;
@@ -1208,13 +574,10 @@
         setStatus("loginStatus", "", "");
 
         const data = await apiPost("loginAgent", { email });
-
         loggedInAgent = data.agent;
         currentActivities = data.activities || [];
 
-        try {
-          localStorage.setItem("kwNorthLastEmail", email);
-        } catch (_) {}
+        try { localStorage.setItem("kwNorthLastEmail", email); } catch (_) {}
 
         document.getElementById("loginCard").classList.add("hidden");
         document.getElementById("formCard").classList.remove("hidden");
@@ -1245,19 +608,11 @@
 
     async function handleSave() {
       if (isSubmitting) return;
-
-      if (!loggedInAgent) {
-        setStatus("formStatus", "err", "Please log in first.");
-        return;
-      }
+      if (!loggedInAgent) return setStatus("formStatus", "err", "Please log in first.");
 
       const submissionType = document.getElementById("submissionType").value;
       const weekStartDate = document.getElementById("weekStartDate").value;
-
-      if (!weekStartDate) {
-        setStatus("formStatus", "err", "Please select the week start date.");
-        return;
-      }
+      if (!weekStartDate) return setStatus("formStatus", "err", "Please select the week start date.");
 
       const values = {};
       currentActivities.forEach(activity => {
@@ -1296,14 +651,9 @@
     document.getElementById("logoutBtn").addEventListener("click", logoutAndReset);
     document.getElementById("downloadImageBtn").addEventListener("click", downloadSuccessImage);
     document.getElementById("closeSuccessBtn").addEventListener("click", closeSuccessModal);
-    document.getElementById("submissionType").addEventListener("change", async () => {
-      updateColumnVisibility();
-      await refreshPrefill();
-    });
+    document.getElementById("submissionType").addEventListener("change", async () => { updateColumnVisibility(); await refreshPrefill(); });
     document.getElementById("weekStartDate").addEventListener("change", refreshPrefill);
-    document.getElementById("loginEmail").addEventListener("keydown", function(e) {
-      if (e.key === "Enter") handleLogin();
-    });
+    document.getElementById("loginEmail").addEventListener("keydown", function(e) { if (e.key === "Enter") handleLogin(); });
 
     try {
       const lastEmail = localStorage.getItem("kwNorthLastEmail");

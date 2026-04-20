@@ -383,6 +383,123 @@
       color:#fff;
     }
 
+    .modal-btn.secondary{
+      background:#e5e7eb;
+      color:#111827;
+    }
+
+    .modal-btn.secondary:hover{
+      background:#dbe0e6;
+    }
+
+    .success-summary-wrap{
+      margin-top:18px;
+      border:1px solid #e5e7eb;
+      border-radius:18px;
+      overflow:hidden;
+      background:#ffffff;
+    }
+
+    .success-summary-card{
+      width:100%;
+      max-width:760px;
+      margin:0 auto;
+      background:#ffffff;
+      color:#1f2937;
+    }
+
+    .success-summary-head{
+      background:linear-gradient(135deg,#1f2937 0%, #111827 100%);
+      color:#ffffff;
+      padding:18px 20px;
+    }
+
+    .success-summary-head h4{
+      margin:0;
+      font-size:22px;
+      line-height:1.1;
+    }
+
+    .success-summary-head p{
+      margin:8px 0 0;
+      color:#d1d5db;
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .success-summary-body{
+      padding:18px 20px 20px;
+      background:#ffffff;
+    }
+
+    .success-meta{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px 16px;
+      margin-bottom:16px;
+      font-size:13px;
+    }
+
+    .success-meta div{
+      padding:10px 12px;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      background:#fafafa;
+    }
+
+    .success-meta strong{
+      display:block;
+      margin-bottom:4px;
+      font-size:12px;
+      color:#6b7280;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .success-summary-table{
+      width:100%;
+      border-collapse:collapse;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      overflow:hidden;
+      font-size:13px;
+    }
+
+    .success-summary-table th{
+      background:#b01c2e;
+      color:#ffffff;
+      padding:10px 12px;
+      text-align:left;
+      font-size:12px;
+    }
+
+    .success-summary-table td{
+      padding:10px 12px;
+      border-bottom:1px solid #e5e7eb;
+      vertical-align:top;
+    }
+
+    .success-summary-table td.num-cell{
+      text-align:center;
+      white-space:nowrap;
+    }
+
+    .success-totals{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:14px;
+      font-size:13px;
+    }
+
+    .success-total-pill{
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid #e5e7eb;
+      background:#fafafa;
+      font-weight:700;
+    }
+
     .footer-note{
       text-align:center;
       font-size:12px;
@@ -525,8 +642,18 @@
     }
 
     @media (max-width: 640px){
+      .page{padding:16px 12px 28px}
       .guide{grid-template-columns:1fr}
+      .hero{padding:22px 18px;border-radius:24px}
       .hero-copy h1{font-size:30px}
+      .card-head{padding:16px 18px}
+      .card-body{padding:18px}
+      .note{font-size:11px}
+      .success-meta{grid-template-columns:1fr}
+      .modal{max-width:100%}
+      .modal-body{padding:18px}
+      .modal-actions{padding:0 18px 18px;gap:10px;flex-wrap:wrap}
+      .modal-actions .modal-btn{width:100%}
     }
 
     @media (max-width: 768px){
@@ -631,7 +758,7 @@
           </div>
 
           <div class="note">
-            Monday shows goal fields only. Wednesday and Friday show both goal and actual fields.
+            Monday shows goal fields only. Wednesday and Friday show both goal and actual fields. Friday starts from your Wednesday actuals where available.
           </div>
 
           <div class="table-wrap">
@@ -663,11 +790,38 @@
   </div>
 
   <div id="successOverlay" class="overlay">
-    <div class="modal">
+    <div class="modal" style="max-width:860px;">
       <div class="modal-head"><h3>Submission Successful</h3></div>
-      <div class="modal-body" id="successMessage">Your submission has been saved successfully.</div>
+      <div class="modal-body">
+        <div id="successMessage">Your submission has been saved successfully.</div>
+
+        <div class="success-summary-wrap">
+          <div class="success-summary-card" id="successSummaryCard">
+            <div class="success-summary-head">
+              <h4>KW North Accountability</h4>
+              <p id="successSummarySubtitle">Submission summary ready for WhatsApp sharing.</p>
+            </div>
+            <div class="success-summary-body">
+              <div class="success-meta" id="successMeta"></div>
+              <table class="success-summary-table">
+                <thead>
+                  <tr>
+                    <th>Activity</th>
+                    <th style="text-align:center;">Goal</th>
+                    <th style="text-align:center;">Actual</th>
+                    <th style="text-align:center;">Gap</th>
+                  </tr>
+                </thead>
+                <tbody id="successActivityBody"></tbody>
+              </table>
+              <div class="success-totals" id="successTotals"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="modal-actions">
-        <button class="modal-btn" id="closeSuccessBtn">OK</button>
+        <button class="modal-btn secondary" id="downloadImageBtn">Download WhatsApp Image</button>
+        <button class="modal-btn" id="closeSuccessBtn">Close</button>
       </div>
     </div>
   </div>
@@ -679,6 +833,7 @@
     let currentActivities = [];
     let isSubmitting = false;
     let isLoggingIn = false;
+    let lastSavedSubmission = null;
 
     function apiPost(action, payload = {}) {
       return fetch(APPS_SCRIPT_BASE_URL, {
@@ -922,13 +1077,136 @@
       }
     }
 
-    function showSuccessModal(message) {
+    function buildSuccessSummaryCard(submission) {
+      const meta = document.getElementById("successMeta");
+      const body = document.getElementById("successActivityBody");
+      const totals = document.getElementById("successTotals");
+      const subtitle = document.getElementById("successSummarySubtitle");
+
+      if (!submission) {
+        meta.innerHTML = "";
+        body.innerHTML = "";
+        totals.innerHTML = "";
+        subtitle.textContent = "Submission summary ready for WhatsApp sharing.";
+        return;
+      }
+
+      subtitle.textContent = `${submission.submissionType} · Week of ${submission.weekStartDate}`;
+
+      meta.innerHTML = `
+        <div><strong>Agent</strong>${escapeHtml(submission.agentName || "")}</div>
+        <div><strong>Group</strong>${escapeHtml(submission.group || "")}</div>
+        <div><strong>Submission</strong>${escapeHtml(submission.submissionType || "")}</div>
+        <div><strong>Week Start</strong>${escapeHtml(submission.weekStartDate || "")}</div>
+      `;
+
+      let goalTotal = 0;
+      let actualTotal = 0;
+      let gapTotal = 0;
+
+      body.innerHTML = (submission.activities || []).map(item => {
+        const goal = sanitizeNumber(item.goal);
+        const actual = sanitizeNumber(item.actual);
+        const gap = Number(item.gap === "" || item.gap === null || typeof item.gap === "undefined" ? (actual - goal) : item.gap);
+        goalTotal += goal;
+        actualTotal += actual;
+        gapTotal += gap;
+
+        return `
+          <tr>
+            <td>${escapeHtml(item.activityName || "")}</td>
+            <td class="num-cell">${goal}</td>
+            <td class="num-cell">${actual}</td>
+            <td class="num-cell">${gap}</td>
+          </tr>
+        `;
+      }).join("");
+
+      totals.innerHTML = `
+        <span class="success-total-pill">Goal Total: ${goalTotal}</span>
+        <span class="success-total-pill">Actual Total: ${actualTotal}</span>
+        <span class="success-total-pill">Gap: ${gapTotal}</span>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function showSuccessModal(message, submission = null) {
       document.getElementById("successMessage").textContent = message;
+      buildSuccessSummaryCard(submission);
       document.getElementById("successOverlay").classList.add("show");
     }
 
     function closeSuccessModal() {
       document.getElementById("successOverlay").classList.remove("show");
+    }
+
+    async function downloadSuccessImage() {
+      const card = document.getElementById("successSummaryCard");
+      if (!card || !lastSavedSubmission) return;
+
+      const width = Math.max(760, card.scrollWidth || card.clientWidth || 760);
+      const height = Math.max(card.scrollHeight || card.clientHeight, 300);
+
+      const clone = card.cloneNode(true);
+      clone.style.width = width + "px";
+      clone.style.margin = "0";
+      clone.style.borderRadius = "0";
+
+      const wrapper = document.createElement("div");
+      wrapper.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+      wrapper.style.width = width + "px";
+      wrapper.style.height = height + "px";
+      wrapper.style.background = "#ffffff";
+      wrapper.appendChild(clone);
+
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+          <foreignObject width="100%" height="100%">${new XMLSerializer().serializeToString(wrapper)}</foreignObject>
+        </svg>
+      `;
+
+      const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(svgBlob);
+
+      try {
+        const img = new Image();
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = url;
+        });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width * 2;
+        canvas.height = height * 2;
+
+        const ctx = canvas.getContext("2d");
+        ctx.scale(2, 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const link = document.createElement("a");
+        const agentName = String(lastSavedSubmission.agentName || "agent").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        const typeSlug = String(lastSavedSubmission.submissionType || "submission").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        link.href = canvas.toDataURL("image/png");
+        link.download = `kw-north-${agentName || "agent"}-${typeSlug || "submission"}.png`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        setStatus("formStatus", "err", "Could not generate the WhatsApp image on this device.");
+      } finally {
+        URL.revokeObjectURL(url);
+      }
     }
 
     function logoutAndReset() {
@@ -942,6 +1220,7 @@
       document.getElementById("prefillPill").classList.add("hidden");
       document.getElementById("actualHeader").classList.remove("hidden");
       document.getElementById("submissionTable").classList.remove("monday-mode");
+      lastSavedSubmission = null;
       setStatus("loginStatus", "", "");
       setStatus("formStatus", "", "");
       closeSuccessModal();
@@ -1034,8 +1313,9 @@
           values
         });
 
+        lastSavedSubmission = data.submissionSummary || null;
         setStatus("formStatus", "ok", `${data.message} Agent: ${data.agentName}. Group: ${data.group}.`);
-        showSuccessModal(`Submission saved successfully for ${data.agentName}.`);
+        showSuccessModal(`Submission saved successfully for ${data.agentName}. Your email confirmation is on the way.`, lastSavedSubmission);
         await refreshPrefill();
       } catch (error) {
         setStatus("formStatus", "err", error.message || "Something went wrong while saving.");
@@ -1048,6 +1328,7 @@
     document.getElementById("loginBtn").addEventListener("click", handleLogin);
     document.getElementById("saveBtn").addEventListener("click", handleSave);
     document.getElementById("logoutBtn").addEventListener("click", logoutAndReset);
+    document.getElementById("downloadImageBtn").addEventListener("click", downloadSuccessImage);
     document.getElementById("closeSuccessBtn").addEventListener("click", closeSuccessModal);
     document.getElementById("submissionType").addEventListener("change", async () => {
       updateColumnVisibility();

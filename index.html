@@ -369,6 +369,8 @@
       display:flex;
       justify-content:flex-end;
       padding:0 24px 24px;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
     .modal-btn{
@@ -482,22 +484,6 @@
     .success-summary-table td.num-cell{
       text-align:center;
       white-space:nowrap;
-    }
-
-    .success-totals{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:14px;
-      font-size:13px;
-    }
-
-    .success-total-pill{
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid #e5e7eb;
-      background:#fafafa;
-      font-weight:700;
     }
 
     .footer-note{
@@ -652,7 +638,7 @@
       .success-meta{grid-template-columns:1fr}
       .modal{max-width:100%}
       .modal-body{padding:18px}
-      .modal-actions{padding:0 18px 18px;gap:10px;flex-wrap:wrap}
+      .modal-actions{padding:0 18px 18px}
       .modal-actions .modal-btn{width:100%}
     }
 
@@ -814,7 +800,6 @@
                 </thead>
                 <tbody id="successActivityBody"></tbody>
               </table>
-              <div class="success-totals" id="successTotals"></div>
             </div>
           </div>
         </div>
@@ -826,6 +811,7 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     const APPS_SCRIPT_BASE_URL = "https://script.google.com/macros/s/AKfycbySmE1dJk53Ues_ZoNMTQL2HjncDRDMf1j1dUt4qDd5BbgugkP5nuZsFQzGHdPoP7-V6g/exec";
 
@@ -1077,16 +1063,23 @@
       }
     }
 
+    function escapeHtml(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
     function buildSuccessSummaryCard(submission) {
       const meta = document.getElementById("successMeta");
       const body = document.getElementById("successActivityBody");
-      const totals = document.getElementById("successTotals");
       const subtitle = document.getElementById("successSummarySubtitle");
 
       if (!submission) {
         meta.innerHTML = "";
         body.innerHTML = "";
-        totals.innerHTML = "";
         subtitle.textContent = "Submission summary ready for WhatsApp sharing.";
         return;
       }
@@ -1100,17 +1093,10 @@
         <div><strong>Week Start</strong>${escapeHtml(submission.weekStartDate || "")}</div>
       `;
 
-      let goalTotal = 0;
-      let actualTotal = 0;
-      let gapTotal = 0;
-
       body.innerHTML = (submission.activities || []).map(item => {
         const goal = sanitizeNumber(item.goal);
         const actual = sanitizeNumber(item.actual);
         const gap = Number(item.gap === "" || item.gap === null || typeof item.gap === "undefined" ? (actual - goal) : item.gap);
-        goalTotal += goal;
-        actualTotal += actual;
-        gapTotal += gap;
 
         return `
           <tr>
@@ -1121,21 +1107,6 @@
           </tr>
         `;
       }).join("");
-
-      totals.innerHTML = `
-        <span class="success-total-pill">Goal Total: ${goalTotal}</span>
-        <span class="success-total-pill">Actual Total: ${actualTotal}</span>
-        <span class="success-total-pill">Gap: ${gapTotal}</span>
-      `;
-    }
-
-    function escapeHtml(value) {
-      return String(value == null ? "" : value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
     }
 
     function showSuccessModal(message, submission = null) {
@@ -1152,47 +1123,23 @@
       const card = document.getElementById("successSummaryCard");
       if (!card || !lastSavedSubmission) return;
 
-      const width = Math.max(760, card.scrollWidth || card.clientWidth || 760);
-      const height = Math.max(card.scrollHeight || card.clientHeight, 300);
-
-      const clone = card.cloneNode(true);
-      clone.style.width = width + "px";
-      clone.style.margin = "0";
-      clone.style.borderRadius = "0";
-
-      const wrapper = document.createElement("div");
-      wrapper.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-      wrapper.style.width = width + "px";
-      wrapper.style.height = height + "px";
-      wrapper.style.background = "#ffffff";
-      wrapper.appendChild(clone);
-
-      const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
-          <foreignObject width="100%" height="100%">${new XMLSerializer().serializeToString(wrapper)}</foreignObject>
-        </svg>
-      `;
-
-      const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-      const url = URL.createObjectURL(svgBlob);
+      const button = document.getElementById("downloadImageBtn");
+      const originalText = button.textContent;
 
       try {
-        const img = new Image();
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = url;
+        button.disabled = true;
+        button.textContent = "Preparing image...";
+
+        if (typeof html2canvas !== "function") {
+          throw new Error("Image download library did not load.");
+        }
+
+        const canvas = await html2canvas(card, {
+          backgroundColor: "#ffffff",
+          scale: 2,
+          useCORS: true,
+          logging: false
         });
-
-        const canvas = document.createElement("canvas");
-        canvas.width = width * 2;
-        canvas.height = height * 2;
-
-        const ctx = canvas.getContext("2d");
-        ctx.scale(2, 2);
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, width, height);
-        ctx.drawImage(img, 0, 0, width, height);
 
         const link = document.createElement("a");
         const agentName = String(lastSavedSubmission.agentName || "agent").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -1203,9 +1150,10 @@
         link.click();
         link.remove();
       } catch (error) {
-        setStatus("formStatus", "err", "Could not generate the WhatsApp image on this device.");
+        setStatus("formStatus", "err", "The image could not be downloaded. Please refresh the page and try again.");
       } finally {
-        URL.revokeObjectURL(url);
+        button.disabled = false;
+        button.textContent = originalText;
       }
     }
 

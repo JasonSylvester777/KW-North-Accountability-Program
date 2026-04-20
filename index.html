@@ -791,11 +791,11 @@
               <div class="success-meta" id="successMeta"></div>
               <table class="success-summary-table">
                 <thead>
-                  <tr>
+                  <tr id="successSummaryHeaderRow">
                     <th>Activity</th>
-                    <th style="text-align:center;">Goal</th>
-                    <th style="text-align:center;">Actual</th>
-                    <th style="text-align:center;">Gap</th>
+                    <th id="successGoalHeader" style="text-align:center;">Goal</th>
+                    <th id="successActualHeader" style="text-align:center;">Actual</th>
+                    <th id="successGapHeader" style="text-align:center;">Gap</th>
                   </tr>
                 </thead>
                 <tbody id="successActivityBody"></tbody>
@@ -1076,13 +1076,19 @@
       const meta = document.getElementById("successMeta");
       const body = document.getElementById("successActivityBody");
       const subtitle = document.getElementById("successSummarySubtitle");
+      const actualHeader = document.getElementById("successActualHeader");
+      const gapHeader = document.getElementById("successGapHeader");
 
       if (!submission) {
         meta.innerHTML = "";
         body.innerHTML = "";
         subtitle.textContent = "Submission summary ready for WhatsApp sharing.";
+        actualHeader.style.display = "";
+        gapHeader.style.display = "";
         return;
       }
+
+      const isMondaySubmission = String(submission.submissionType || "") === "Monday Goals";
 
       subtitle.textContent = `${submission.submissionType} · Week of ${submission.weekStartDate}`;
 
@@ -1093,10 +1099,22 @@
         <div><strong>Week Start</strong>${escapeHtml(submission.weekStartDate || "")}</div>
       `;
 
+      actualHeader.style.display = isMondaySubmission ? "none" : "";
+      gapHeader.style.display = isMondaySubmission ? "none" : "";
+
       body.innerHTML = (submission.activities || []).map(item => {
         const goal = sanitizeNumber(item.goal);
         const actual = sanitizeNumber(item.actual);
         const gap = Number(item.gap === "" || item.gap === null || typeof item.gap === "undefined" ? (actual - goal) : item.gap);
+
+        if (isMondaySubmission) {
+          return `
+            <tr>
+              <td>${escapeHtml(item.activityName || "")}</td>
+              <td class="num-cell">${goal}</td>
+            </tr>
+          `;
+        }
 
         return `
           <tr>

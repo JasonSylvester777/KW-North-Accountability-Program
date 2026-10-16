@@ -1,262 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KW North Agent Accountability</title>
-  <style>
-    :root{
-      --kw-red:#B01C2E;--kw-red-dark:#8E1624;--kw-charcoal:#1F2937;--kw-charcoal-2:#374151;
-      --kw-border:#E5E7EB;--kw-success:#166534;--kw-error:#991B1B;--shadow:0 18px 45px rgba(15,23,42,.12);--radius-xl:24px;
-    }
-    *{box-sizing:border-box} html,body{margin:0;padding:0}
-    body{font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#f5f7fa 0%,#eef2f7 100%);color:var(--kw-charcoal)}
-    .page{max-width:1200px;margin:0 auto;padding:28px 20px 40px}
-    .hero{background:linear-gradient(135deg,#1f2937 0%, #111827 100%);color:#fff;border-radius:30px;box-shadow:var(--shadow);padding:28px 30px;position:relative;overflow:hidden;margin-bottom:24px}
-    .hero::after{content:"";position:absolute;right:-60px;top:-60px;width:210px;height:210px;border-radius:50%;background:rgba(176,28,46,0.18)}
-    .hero-top{display:flex;align-items:center;gap:18px;position:relative;z-index:1}
-    .logo-wrap{width:110px;min-width:110px;height:110px;background:#ffffff;border:1px solid rgba(255,255,255,0.35);border-radius:24px;display:flex;align-items:center;justify-content:center;padding:12px;box-shadow:0 10px 24px rgba(15,23,42,.14)}
-    .logo-wrap img{max-width:92%;max-height:92%;object-fit:contain;display:block}
-    .hero-copy h1{margin:0 0 8px;font-size:36px;line-height:1.05}.hero-copy p{margin:0;color:#d1d5db;line-height:1.6;max-width:760px}
-    .main-grid{display:grid;grid-template-columns:1fr;gap:24px}
-    .card{background:#fff;border:1px solid var(--kw-border);border-radius:var(--radius-xl);box-shadow:var(--shadow);overflow:hidden}
-    .card-head{padding:20px 22px;border-bottom:1px solid var(--kw-border);background:#fff}.card-head h2{margin:0;font-size:21px;color:var(--kw-charcoal)}
-    .card-body{padding:22px}
-    .guide{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-    .guide-item{border:1px solid var(--kw-border);border-radius:16px;background:#fafafa;padding:14px 16px}
-    .guide-item strong{display:block;margin-bottom:5px;color:var(--kw-red);font-size:14px}.guide-item span{font-size:13px;line-height:1.5;color:#4b5563}
-    .grid-login{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end}.grid-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-    .field{display:flex;flex-direction:column;gap:6px}.field label{font-size:13px;font-weight:700;color:var(--kw-charcoal-2)}
-    .field input,.field select{width:100%;height:48px;border:1px solid var(--kw-border);border-radius:12px;padding:0 14px;font-size:14px;outline:none;background:#fff}
-    .field input:focus,.field select:focus{border-color:var(--kw-red);box-shadow:0 0 0 3px rgba(176,28,46,0.12)}
-    .field input[disabled]{background:#f9fafb;color:#6b7280}
-    .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px;flex-wrap:wrap}
-    .btn{border:none;border-radius:12px;height:46px;padding:0 18px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s ease}
-    .btn-primary{background:var(--kw-red);color:#fff}.btn-primary:hover{background:var(--kw-red-dark)}.btn-secondary{background:#e5e7eb;color:#111827}
-    .pill-row{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--kw-charcoal);color:#fff;font-size:13px;font-weight:700}
-    .pill.light{background:#f3f4f6;color:#374151;border:1px solid #e5e7eb}.note{margin-top:10px;font-size:12px;color:#6b7280;line-height:1.5}
-    .status{margin-top:18px;padding:14px 16px;border-radius:14px;display:none;font-size:14px;font-weight:700}
-    .status.ok{display:block;background:#ecfdf3;color:var(--kw-success);border:1px solid #bbf7d0}.status.err{display:block;background:#fef2f2;color:var(--kw-error);border:1px solid #fecaca}
-    .table-wrap{overflow:auto;border:1px solid var(--kw-border);border-radius:16px;background:#fff;margin-top:16px}
-    table{width:100%;border-collapse:collapse;min-width:860px}.monday-mode{min-width:620px}
-    th{background:var(--kw-charcoal);color:#fff;text-align:left;padding:12px;font-size:13px;white-space:nowrap}
-    td{border-bottom:1px solid var(--kw-border);padding:10px 12px;font-size:14px;vertical-align:middle}
-    tr:nth-child(even) td{background:#fcfcfd}.hidden{display:none !important}
-    .overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
-    .overlay.show{display:flex}.modal{width:100%;max-width:520px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.22);overflow:hidden;border:1px solid #e5e7eb}
-    .modal-head{background:linear-gradient(135deg,#1f2937 0%, #111827 100%);color:#fff;padding:20px 24px}.modal-head h3{margin:0;font-size:22px}
-    .modal-body{padding:24px;color:#1f2937;line-height:1.6}.modal-actions{display:flex;justify-content:flex-end;padding:0 24px 24px;gap:10px;flex-wrap:wrap}
-    .modal-btn{border:none;border-radius:12px;height:44px;padding:0 18px;font-size:14px;font-weight:700;cursor:pointer;background:var(--kw-red);color:#fff}
-    .footer-note{text-align:center;font-size:12px;color:#6b7280;margin-top:10px}
-    .mobile-activity-list{display:none;margin-top:16px;gap:12px;flex-direction:column}
-    .activity-card{border:1px solid var(--kw-border);border-radius:16px;background:#fff;padding:14px;box-shadow:0 8px 18px rgba(15,23,42,.05)}
-    .activity-card-title{font-size:14px;font-weight:700;color:var(--kw-charcoal);margin-bottom:12px;line-height:1.4}
-    .activity-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.activity-card-grid.one-col{grid-template-columns:1fr}
-    .activity-mini-field{display:flex;flex-direction:column;gap:6px}.activity-mini-field label{font-size:12px;font-weight:700;color:#6b7280}
-    .stepper{display:flex;align-items:center;gap:8px;width:100%}
-    .stepper-btn{width:34px;min-width:34px;height:34px;border:1px solid #d1d5db;border-radius:10px;background:#f9fafb;color:#374151;font-size:18px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
-    .stepper-btn.plus{background:#fff7f8;color:var(--kw-red);border-color:#efc5cb}
-    .stepper-input{width:72px;height:40px;border:1px solid var(--kw-border);border-radius:10px;padding:0 8px;text-align:center;font-size:14px;outline:none;background:#fff;-moz-appearance:textfield}
-    .stepper-input::-webkit-outer-spin-button,.stepper-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-    @media (max-width:980px){.guide{grid-template-columns:1fr 1fr}.grid-login{grid-template-columns:1fr}.grid-form{grid-template-columns:1fr}.hero-top{flex-direction:column;align-items:flex-start}.logo-wrap{width:96px;height:96px;min-width:96px}}
-    @media (max-width:768px){.table-wrap{display:none}.mobile-activity-list{display:flex}.actions{justify-content:stretch}.actions .btn,.modal-btn{width:100%}.stepper-btn{width:36px;min-width:36px;height:36px}.stepper-input{width:78px;height:42px}}
-    @media (max-width:640px){.page{padding:16px 12px 28px}.guide{grid-template-columns:1fr}.hero{padding:22px 18px;border-radius:24px}.hero-copy h1{font-size:30px}.card-head{padding:16px 18px}.card-body,.modal-body{padding:18px}.modal-actions{padding:0 18px 18px}}
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KW North Accountability</title>
+<style>
+:root{--red:#B40101;--black:#111827;--grey:#666;--line:#e5e7eb;--bg:#f4f5f7;--green:#166534;--orange:#b45309;--shadow:0 12px 32px rgba(0,0,0,.08)}*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#1f2937}.wrap{max-width:1180px;margin:auto;padding:20px}.hero{background:linear-gradient(135deg,#111827,#1f2937);color:#fff;padding:24px;border-radius:24px;display:flex;gap:18px;align-items:center;box-shadow:var(--shadow)}.hero img{width:84px;height:84px;object-fit:contain;background:#fff;border-radius:18px;padding:8px}.hero h1{margin:0;font-size:30px}.hero p{margin:7px 0 0;color:#d1d5db}.card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);margin-top:18px;overflow:hidden}.head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.head h2{margin:0;font-size:19px}.body{padding:20px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.field label{display:block;font-size:12px;font-weight:700;color:#4b5563;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px;font-size:14px;background:#fff}.field textarea{min-height:80px}.btn{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer}.primary{background:var(--red);color:#fff}.secondary{background:#e5e7eb}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;flex-wrap:wrap}.hidden{display:none!important}.status{padding:11px 13px;border-radius:10px;margin-top:12px;font-weight:700;font-size:13px}.ok{background:#ecfdf3;color:var(--green)}.err{background:#fef2f2;color:#991b1b}.profile{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:12px}.pill{border-radius:999px;padding:7px 10px;font-size:12px;font-weight:700;background:#f3f4f6;display:inline-flex}.stage{background:#fee2e2;color:#991b1b}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.metric{border:1px solid var(--line);border-radius:15px;padding:15px}.metric h3{margin:0 0 12px;font-size:14px}.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;text-align:center}.num{background:#f9fafb;border-radius:10px;padding:9px}.num small{display:block;color:#6b7280;font-size:10px;text-transform:uppercase}.num strong{display:block;font-size:18px;margin-top:3px}.bar{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:10px}.bar span{display:block;height:100%;background:var(--red)}.training-grid{display:grid;grid-template-columns:1.2fr 2fr;gap:16px}.video-progress{border:1px solid var(--line);border-radius:16px;padding:16px}.video-progress .big{font-size:32px;font-weight:800}.training-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.training-item{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;grid-template-columns:1fr 150px;gap:8px;align-items:center}.muted{color:#6b7280;font-size:12px}.footer{text-align:center;color:#6b7280;font-size:12px;padding:18px}.note{background:#fff7ed;border:1px solid #fed7aa;padding:12px;border-radius:12px;font-size:13px;margin-bottom:15px}.today{color:var(--red);font-weight:800}@media(max-width:850px){.grid,.metrics,.profile{grid-template-columns:1fr 1fr}.training-grid{grid-template-columns:1fr}.training-list{grid-template-columns:1fr}}@media(max-width:560px){.wrap{padding:10px}.hero{align-items:flex-start}.hero h1{font-size:23px}.hero img{width:64px;height:64px}.grid,.metrics,.profile{grid-template-columns:1fr}.training-item{grid-template-columns:1fr}.actions .btn{width:100%}}
+</style>
 </head>
-<body>
-  <div class="page">
-    <div class="hero"><div class="hero-top"><div class="logo-wrap"><img src="KW_LOGO-removebg-preview.png" alt="KW North Logo"></div><div class="hero-copy"><h1>KW North Agent Accountability</h1><p>Professional weekly submission workflow for GT3, CAP Academy, and F1 Top Agents. Fast internal login with email only.</p></div></div></div>
-    <div class="main-grid">
-      <div class="card"><div class="card-head"><h2>How it works</h2></div><div class="card-body"><div class="guide">
-        <div class="guide-item"><strong>Step 1</strong><span>Enter your registered office email address.</span></div>
-        <div class="guide-item"><strong>Step 2</strong><span>Your group and accountability fields load automatically.</span></div>
-        <div class="guide-item"><strong>Step 3</strong><span>Wednesday and Friday can pull prior values from earlier in the same week.</span></div>
-        <div class="guide-item"><strong>Step 4</strong><span>After saving, check your email for your confirmation and figures.</span></div>
-      </div></div></div>
+<body><div class="wrap">
+<div class="hero"><img src="KW_LOGO-removebg-preview.png" alt="KW North"><div><h1>KW North Accountability</h1><p>Set your weekly commitment. Update your numbers. See what your business is telling you.</p></div></div>
 
-      <div class="card" id="loginCard"><div class="card-head"><h2>Agent Login</h2></div><div class="card-body">
-        <div class="grid-login"><div class="field"><label>Email Address</label><input type="email" id="loginEmail" placeholder="Enter your registered email address" autocomplete="email"></div><button class="btn btn-primary" id="loginBtn">Continue</button></div>
-        <div id="loginStatus" class="status"></div>
-      </div></div>
+<div class="card" id="loginCard"><div class="head"><h2>Agent Login</h2></div><div class="body"><div class="grid" style="grid-template-columns:1fr auto"><div class="field"><label>Registered KW North Email</label><input id="email" type="email" placeholder="name@kwsa.co.za"></div><button class="btn primary" id="loginBtn" style="align-self:end">Continue</button></div><div id="loginStatus"></div></div></div>
 
-      <div class="card hidden" id="formCard"><div class="card-head"><h2>Weekly Submission</h2></div><div class="card-body">
-        <div class="grid-form">
-          <div class="field"><label>Logged In Agent</label><input type="text" id="agentDisplay" disabled></div>
-          <div class="field"><label>Submission Type</label><select id="submissionType"></select></div>
-          <div class="field"><label>Week Start Date</label><input type="date" id="weekStartDate"></div>
-          <div class="field"><label>Today</label><input type="date" id="todayDate" disabled></div>
-        </div>
-        <div class="pill-row"><span class="pill" id="groupPill">Group</span><span class="pill light hidden" id="prefillPill">Weekly values loaded</span></div>
-        <div class="note">Monday shows goal fields only. Wednesday and Friday show both goal and actual fields. Friday starts from your Wednesday actuals where available.</div>
-        <div class="table-wrap"><table id="submissionTable"><thead><tr><th>Activity</th><th>Goal</th><th id="actualHeader">Actual</th></tr></thead><tbody id="activityBody"></tbody></table></div>
-        <div class="mobile-activity-list" id="mobileActivityList"></div>
-        <div class="actions"><button class="btn btn-secondary" id="logoutBtn">Logout</button><button class="btn btn-primary" id="saveBtn">Save Submission</button></div>
-        <div id="formStatus" class="status"></div>
-      </div></div>
-      <div class="footer-note">KW North Accountability System</div>
-    </div>
-  </div>
+<div id="app" class="hidden">
+<div class="card"><div class="head"><h2>My Accountability Dashboard</h2><button class="btn secondary" id="logoutBtn">Logout</button></div><div class="body"><div class="profile"><div><div class="muted">AGENT</div><strong id="agentName"></strong></div><div><div class="muted">CURRENT STAGE</div><span class="pill stage" id="stage"></span></div><div><div class="muted">MANAGER</div><strong id="manager"></strong></div><div><div class="muted">STAGE SINCE</div><strong id="stageDate"></strong></div></div></div></div>
 
-  <div id="successOverlay" class="overlay">
-    <div class="modal">
-      <div class="modal-head"><h3>Submission Successful</h3></div>
-      <div class="modal-body" id="successMessage">Your submission has been saved successfully. Please check your email for your confirmation, figures, and PDF attachment.</div>
-      <div class="modal-actions"><button class="modal-btn" id="closeSuccessBtn">Close</button></div>
-    </div>
-  </div>
+<div class="card"><div class="head"><h2>This Week</h2><span class="pill" id="weekLabel"></span></div><div class="body"><div id="mondayNote" class="note hidden"><strong>Monday Goal Setting:</strong> Set the numbers you commit to achieving this week. These become your weekly benchmark.</div><div class="metrics" id="metrics"></div><div class="actions"><button class="btn secondary" id="goalBtn">Set / Update Weekly Goals</button><button class="btn primary" id="actualBtn">Update My Actuals</button></div></div></div>
 
-  <script>
-    const APPS_SCRIPT_BASE_URL = "https://script.google.com/macros/s/AKfycbySmE1dJk53Ues_ZoNMTQL2HjncDRDMf1j1dUt4qDd5BbgugkP5nuZsFQzGHdPoP7-V6g/exec";
-    let loggedInAgent = null, currentActivities = [], isSubmitting = false, isLoggingIn = false;
+<div class="card"><div class="head"><h2>Training & Setup</h2><span class="pill" id="trainingPct"></span></div><div class="body"><div class="training-grid"><div class="video-progress"><div class="muted">TRAINING HUB PROGRESS</div><div class="big" id="videoCount">0/0</div><div class="bar"><span id="videoBar" style="width:0%"></span></div><p class="muted">This updates automatically from the KW North Training Hub.</p></div><div><div class="training-list" id="trainingList"></div></div></div></div></div>
+</div>
+<div class="footer">KW North • Accountability & Production</div>
+</div>
 
-    function apiPost(action, payload = {}) {
-      return fetch(APPS_SCRIPT_BASE_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({action,payload})})
-        .then(async res => { const data = await res.json(); if (!data.success) throw new Error(data.message || "Request failed."); return data; });
-    }
-    function setStatus(id, type, message) {
-      const box = document.getElementById(id); box.className = "status"; box.textContent = ""; if (!type) return; box.classList.add(type); box.textContent = message;
-    }
-    function setButtonState(id, loading, loadingText, normalText) {
-      const btn = document.getElementById(id); btn.disabled = loading; btn.textContent = loading ? loadingText : normalText; btn.style.opacity = loading ? "0.75" : "1";
-    }
-    function isMondayMode(){ return document.getElementById("submissionType").value === "Monday Goals"; }
-    function updateColumnVisibility(){
-      const monday = isMondayMode();
-      document.getElementById("actualHeader").classList.toggle("hidden", monday);
-      document.querySelectorAll(".actual-cell").forEach(el => el.classList.toggle("hidden", monday));
-      document.getElementById("submissionTable").classList.toggle("monday-mode", monday);
-      document.querySelectorAll(".mobile-actual-field").forEach(el => el.classList.toggle("hidden", monday));
-      document.querySelectorAll(".activity-card-grid").forEach(el => el.classList.toggle("one-col", monday));
-    }
-    function sanitizeNumber(value){ const num = Number(value); if (!Number.isFinite(num) || num < 0) return 0; return Math.floor(num); }
-    function syncLinkedInputs(id, value, sourceEl = null){
-      const safeValue = sanitizeNumber(value);
-      document.querySelectorAll(`[data-sync-id="${id}"]`).forEach(el => { if (el !== sourceEl) el.value = safeValue; });
-      return safeValue;
-    }
-    function changeLinkedValue(id, delta){
-      const currentEl = document.querySelector(`[data-sync-id="${id}"]`);
-      const current = sanitizeNumber(currentEl ? currentEl.value : 0);
-      syncLinkedInputs(id, Math.max(0, current + delta));
-    }
-    function createStepperInput(id, value = 0){
-      const wrapper = document.createElement("div"); wrapper.className = "stepper";
-      const minusBtn = document.createElement("button"); minusBtn.type = "button"; minusBtn.className = "stepper-btn"; minusBtn.textContent = "−"; minusBtn.addEventListener("click", () => changeLinkedValue(id, -1));
-      const input = document.createElement("input"); input.type = "number"; input.min = "0"; input.step = "1"; input.value = sanitizeNumber(value); input.className = "stepper-input"; input.setAttribute("data-sync-id", id);
-      input.addEventListener("input", () => { input.value = syncLinkedInputs(id, input.value, input); });
-      input.addEventListener("blur", () => { input.value = syncLinkedInputs(id, input.value, input); });
-      const plusBtn = document.createElement("button"); plusBtn.type = "button"; plusBtn.className = "stepper-btn plus"; plusBtn.textContent = "+"; plusBtn.addEventListener("click", () => changeLinkedValue(id, 1));
-      wrapper.append(minusBtn, input, plusBtn); return wrapper;
-    }
-    function renderActivityRows(){
-      const body = document.getElementById("activityBody"), mobileList = document.getElementById("mobileActivityList");
-      body.innerHTML = ""; mobileList.innerHTML = "";
-      currentActivities.forEach(activity => {
-        const goalId = `goal_${activity.activityId}`, actualId = `actual_${activity.activityId}`;
-        const tr = document.createElement("tr");
-        const tdActivity = document.createElement("td"); tdActivity.textContent = activity.activityName;
-        const tdGoal = document.createElement("td"); tdGoal.appendChild(createStepperInput(goalId, 0));
-        const tdActual = document.createElement("td"); tdActual.className = "actual-cell"; tdActual.appendChild(createStepperInput(actualId, 0));
-        tr.append(tdActivity, tdGoal, tdActual); body.appendChild(tr);
-
-        const card = document.createElement("div"); card.className = "activity-card";
-        const title = document.createElement("div"); title.className = "activity-card-title"; title.textContent = activity.activityName;
-        const grid = document.createElement("div"); grid.className = "activity-card-grid";
-        const goalWrap = document.createElement("div"); goalWrap.className = "activity-mini-field"; goalWrap.innerHTML = "<label>Goal</label>"; goalWrap.appendChild(createStepperInput(goalId, 0));
-        const actualWrap = document.createElement("div"); actualWrap.className = "activity-mini-field mobile-actual-field"; actualWrap.innerHTML = "<label>Actual</label>"; actualWrap.appendChild(createStepperInput(actualId, 0));
-        grid.append(goalWrap, actualWrap); card.append(title, grid); mobileList.appendChild(card);
-      });
-      updateColumnVisibility();
-    }
-    function setSyncedValue(id, value){ syncLinkedInputs(id, value); }
-    function getSyncedValue(id){ const el = document.querySelector(`[data-sync-id="${id}"]`); return sanitizeNumber(el ? el.value : 0); }
-
-    function applyPrefill(data){
-      const values = data.values || {}; const type = data.submissionType; let pillText = "Weekly values loaded";
-      if (type === "Monday Goals") pillText = "Fresh Monday entry for this week.";
-      else if (type === "Wednesday Check-In") pillText = "Wednesday pulled Monday goals where available.";
-      else if (type === "Friday Final") pillText = "Friday pulled Monday goals and latest weekly actuals where available.";
-      currentActivities.forEach(activity => {
-        const item = values[activity.activityId] || { goal: 0, actual: 0 };
-        setSyncedValue(`goal_${activity.activityId}`, item.goal ?? 0);
-        setSyncedValue(`actual_${activity.activityId}`, item.actual ?? 0);
-      });
-      const prefillPill = document.getElementById("prefillPill"); prefillPill.textContent = pillText; prefillPill.classList.remove("hidden"); updateColumnVisibility();
-    }
-
-    async function refreshPrefill(){
-      if (!loggedInAgent) return;
-      const submissionType = document.getElementById("submissionType").value, weekStartDate = document.getElementById("weekStartDate").value;
-      if (!submissionType || !weekStartDate) return;
-      try { applyPrefill(await apiPost("getWeekPrefillData", { agentId: loggedInAgent.agentId, weekStartDate, submissionType })); }
-      catch (error) { setStatus("formStatus", "err", error.message || "Could not load weekly values."); }
-    }
-
-    function showSuccessModal(message){ document.getElementById("successMessage").textContent = message; document.getElementById("successOverlay").classList.add("show"); }
-    function closeSuccessModal(){ document.getElementById("successOverlay").classList.remove("show"); }
-
-    function logoutAndReset(){
-      loggedInAgent = null; currentActivities = [];
-      document.getElementById("loginCard").classList.remove("hidden");
-      document.getElementById("formCard").classList.add("hidden");
-      document.getElementById("loginEmail").value = "";
-      document.getElementById("activityBody").innerHTML = "";
-      document.getElementById("mobileActivityList").innerHTML = "";
-      document.getElementById("prefillPill").classList.add("hidden");
-      document.getElementById("actualHeader").classList.remove("hidden");
-      document.getElementById("submissionTable").classList.remove("monday-mode");
-      setStatus("loginStatus", "", ""); setStatus("formStatus", "", ""); closeSuccessModal();
-    }
-
-    async function handleLogin(){
-      if (isLoggingIn) return;
-      const email = document.getElementById("loginEmail").value.trim();
-      if (!email) return setStatus("loginStatus", "err", "Please enter your registered email address.");
-      try{
-        isLoggingIn = true; setButtonState("loginBtn", true, "Checking...", "Continue"); setStatus("loginStatus", "", "");
-        const data = await apiPost("loginAgent", { email });
-        loggedInAgent = data.agent; currentActivities = data.activities || [];
-        try { localStorage.setItem("kwNorthLastEmail", email); } catch (_) {}
-        document.getElementById("loginCard").classList.add("hidden");
-        document.getElementById("formCard").classList.remove("hidden");
-        document.getElementById("agentDisplay").value = `${loggedInAgent.fullName} (${loggedInAgent.emailAddress})`;
-        const submissionTypeSelect = document.getElementById("submissionType"); submissionTypeSelect.innerHTML = "";
-        (data.submissionTypes || []).forEach(type => { const option = document.createElement("option"); option.value = type; option.textContent = type; submissionTypeSelect.appendChild(option); });
-        document.getElementById("todayDate").value = data.today;
-        document.getElementById("weekStartDate").value = data.mondayDate;
-        document.getElementById("groupPill").textContent = `Group: ${loggedInAgent.group}`;
-        renderActivityRows(); await refreshPrefill();
-      } catch (error) { setStatus("loginStatus", "err", error.message || "Login failed."); }
-      finally { isLoggingIn = false; setButtonState("loginBtn", false, "Checking...", "Continue"); }
-    }
-
-    async function handleSave(){
-      if (isSubmitting) return;
-      if (!loggedInAgent) return setStatus("formStatus", "err", "Please log in first.");
-      const submissionType = document.getElementById("submissionType").value, weekStartDate = document.getElementById("weekStartDate").value;
-      if (!weekStartDate) return setStatus("formStatus", "err", "Please select the week start date.");
-      const values = {};
-      currentActivities.forEach(activity => {
-        values[activity.activityId] = { goal: getSyncedValue(`goal_${activity.activityId}`), actual: submissionType === "Monday Goals" ? 0 : getSyncedValue(`actual_${activity.activityId}`) };
-      });
-      try{
-        isSubmitting = true; setButtonState("saveBtn", true, "Saving...", "Save Submission"); setStatus("formStatus", "", "");
-        const data = await apiPost("submitWebAppForm", { agentId: loggedInAgent.agentId, submissionType, weekStartDate, values });
-        setStatus("formStatus", "ok", `${data.message} Agent: ${data.agentName}. Group: ${data.group}.`);
-        showSuccessModal(`Submission saved successfully for ${data.agentName}. Please check your email for your confirmation, figures, and PDF attachment.`);
-        await refreshPrefill();
-      } catch (error) { setStatus("formStatus", "err", error.message || "Something went wrong while saving."); }
-      finally { isSubmitting = false; setButtonState("saveBtn", false, "Saving...", "Save Submission"); }
-    }
-
-    document.getElementById("loginBtn").addEventListener("click", handleLogin);
-    document.getElementById("saveBtn").addEventListener("click", handleSave);
-    document.getElementById("logoutBtn").addEventListener("click", logoutAndReset);
-    document.getElementById("closeSuccessBtn").addEventListener("click", closeSuccessModal);
-    document.getElementById("submissionType").addEventListener("change", async () => { updateColumnVisibility(); await refreshPrefill(); });
-    document.getElementById("weekStartDate").addEventListener("change", refreshPrefill);
-    document.getElementById("loginEmail").addEventListener("keydown", function(e){ if (e.key === "Enter") handleLogin(); });
-    try { const lastEmail = localStorage.getItem("kwNorthLastEmail"); if (lastEmail) document.getElementById("loginEmail").value = lastEmail; } catch (_) {}
-  </script>
-</body>
-</html>
+<div id="modal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.48);display:flex;align-items:center;justify-content:center;padding:16px;z-index:99"><div style="background:#fff;border-radius:20px;max-width:620px;width:100%;max-height:90vh;overflow:auto"><div class="head"><h2 id="modalTitle"></h2><button class="btn secondary" onclick="closeModal()">Close</button></div><div class="body" id="modalBody"></div></div></div>
+<script>
+const API='https://fdbsqjtwbucjhjgphhyh.supabase.co/functions/v1/accountability-api';
+const items=[['RREA','RREA'],['INDUCTION','Induction'],['TECH1','Tech Training 1'],['TECH2','Tech Training 2'],['BT120','Breakthrough 120'],['CONTACTS201','201 Contacts'],['SMARTPLANS','SmartPlans Linked'],['FIC','FIC Training']];
+const metrics=[['conversations','Conversations'],['appointments','Appointments'],['active_listings','Active Listings'],['show_houses','Show Houses'],['otps','Offers to Purchase'],['registrations','Registrations']];
+let state=null,token=localStorage.getItem('kw_accountability_token')||'';
+const $=id=>document.getElementById(id);
+async function api(action,payload={}){const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,token,...payload})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Request failed');return d}
+function fmt(d){if(!d)return'—';return new Date(d+'T12:00:00').toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'})}
+function setStatus(id,msg,type){$(id).innerHTML=msg?`<div class="status ${type}">${msg}</div>`:''}
+function todayIsMonday(){return new Date().getDay()===1}
+async function login(){const email=$('email').value.trim();$('loginBtn').disabled=true;try{const d=await api('agent_login',{email});token=d.token;localStorage.setItem('kw_accountability_token',token);await load()}catch(e){setStatus('loginStatus',e.message,'err')}finally{$('loginBtn').disabled=false}}
+async function load(){try{state=await api('agent_bootstrap');render();$('loginCard').classList.add('hidden');$('app').classList.remove('hidden')}catch(e){localStorage.removeItem('kw_accountability_token');token='';$('loginCard').classList.remove('hidden');$('app').classList.add('hidden');if(e.message)setStatus('loginStatus',e.message,'err')}}
+function render(){const a=state.agent;$('agentName').textContent=a.full_name;$('stage').textContent=a.stage;$('manager').textContent=a.manager;$('stageDate').textContent=fmt(a.stage_entry_date);$('weekLabel').textContent=`Week of ${fmt(state.period.week_start)}`;$('mondayNote').classList.toggle('hidden',!todayIsMonday());
+ $('metrics').innerHTML=metrics.map(([k,l])=>{const x=state.score[k];const pct=x.goal?Math.min(100,Math.round(x.actual/x.goal*100)):0;return `<div class="metric"><h3>${l}</h3><div class="nums"><div class="num"><small>Goal</small><strong>${x.goal}</strong></div><div class="num"><small>Actual</small><strong>${x.actual}</strong></div><div class="num"><small>Gap</small><strong>${x.gap}</strong></div></div><div class="bar"><span style="width:${pct}%"></span></div></div>`}).join('');
+ const t=state.training;$('videoCount').textContent=`${t.passed}/${t.required}`;$('videoBar').style.width=`${t.percent}%`;$('trainingPct').textContent=t.linked?`${t.percent}% Training Complete`:'Training profile not linked';const manual=new Map(state.manual_training.map(x=>[x.item_code,x]));$('trainingList').innerHTML=items.map(([c,l])=>{const x=manual.get(c);const st=x?.status||'Not Started';return `<div class="training-item"><div><strong>${l}</strong><div class="muted">${x?.completed_at?'Completed '+new Date(x.completed_at).toLocaleDateString('en-ZA'):st}</div></div><select data-code="${c}" data-label="${l}" onchange="saveTraining(this)"><option ${st==='Not Started'?'selected':''}>Not Started</option><option ${st==='In Progress'?'selected':''}>In Progress</option><option ${st==='Complete'?'selected':''}>Complete</option><option ${st==='Outstanding'?'selected':''}>Outstanding</option></select></div>`}).join('')}
+function openGoals(){openMetricModal('Set Weekly Goals','goal')}
+function openActuals(){openMetricModal('Update Running Actuals','actual')}
+function openMetricModal(title,mode){$('modalTitle').textContent=title;const source=mode==='goal'?state.goals:state.latest_update;const fields=metrics.map(([k,l])=>{const key=mode==='goal'?`${k}_goal`:`${k}_actual`;return `<div class="field"><label>${l}</label><input type="number" min="0" id="m_${k}" value="${source?.[key]||0}"></div>`}).join('');$('modalBody').innerHTML=`${mode==='goal'?'<div class="note">Your Monday goals remain your commitment for the week. Update only if you need to correct them.</div>':'<div class="note">Enter your running total for the week, not only today\'s activity.</div>'}<div class="grid">${fields}</div>${mode==='actual'?'<div class="field" style="margin-top:12px"><label>Optional Note</label><textarea id="m_note"></textarea></div>':''}<div class="actions"><button class="btn primary" onclick="saveMetrics(\'${mode}\')">Save</button></div>`;$('modal').classList.remove('hidden')}
+async function saveMetrics(mode){const p={week_start:state.period.week_start};metrics.forEach(([k])=>p[k]=Number($(`m_${k}`).value||0));if(mode==='actual'){p.report_date=state.period.today;p.note=$('m_note').value}try{await api(mode==='goal'?'save_goals':'save_actuals',p);closeModal();await load()}catch(e){alert(e.message)}}
+async function saveTraining(sel){try{await api('save_training',{item_code:sel.dataset.code,item_label:sel.dataset.label,status:sel.value});await load()}catch(e){alert(e.message)}}
+function closeModal(){$('modal').classList.add('hidden')}
+$('loginBtn').onclick=login;$('goalBtn').onclick=openGoals;$('actualBtn').onclick=openActuals;$('logoutBtn').onclick=async()=>{try{await api('logout')}catch{}localStorage.removeItem('kw_accountability_token');token='';location.reload()};$('email').addEventListener('keydown',e=>{if(e.key==='Enter')login()});if(token)load();
+</script></body></html>

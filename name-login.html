@@ -33,13 +33,13 @@ async function login(){
     const d=await r.json();
     if(!r.ok) throw new Error(d.error||'Login failed.');
     localStorage.setItem('kw_accountability_token',d.token);
-    window.location.replace('/index.html');
+    window.location.replace('/agent.html');
   }catch(e){statusBox.innerHTML='<div class="status">'+e.message+'</div>';}
   finally{button.disabled=false;}
 }
 button.addEventListener('click',login);
 input.addEventListener('keydown',e=>{if(e.key==='Enter')login();});
-if(localStorage.getItem('kw_accountability_token')) window.location.replace('/index.html');
+if(localStorage.getItem('kw_accountability_token')) window.location.replace('/agent.html');
 </script>
 </body>
 </html>

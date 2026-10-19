@@ -1,6 +1,6 @@
 {
-  "cleanUrls": true,
+  "cleanUrls": false,
   "redirects": [
-    { "source": "/", "destination": "/name-login", "permanent": false }
+    { "source": "/", "destination": "/name-login.html", "permanent": false }
   ]
 }

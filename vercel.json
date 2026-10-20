@@ -1,6 +1,8 @@
 {
   "cleanUrls": false,
   "redirects": [
-    { "source": "/", "destination": "/name-login.html", "permanent": false }
+    { "source": "/", "destination": "/name-login.html", "permanent": false },
+    { "source": "/dashboard", "destination": "/admin-login.html", "permanent": false },
+    { "source": "/dashboard/", "destination": "/admin-login.html", "permanent": false }
   ]
 }

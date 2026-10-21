@@ -17,7 +17,7 @@
 <div id="modal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.48);display:flex;align-items:center;justify-content:center;padding:16px;z-index:99"><div style="background:#fff;border-radius:20px;max-width:620px;width:100%;max-height:90vh;overflow:auto"><div class="head"><h2 id="modalTitle"></h2><button class="btn secondary" onclick="closeModal()">Close</button></div><div class="body" id="modalBody"></div></div></div>
 <script>
 const API='https://fdbsqjtwbucjhjgphhyh.supabase.co/functions/v1/accountability-api';
-const items=[['RREA','RREA'],['INDUCTION','Induction'],['TECH1','Tech Training 1'],['TECH2','Tech Training 2'],['BT120','Breakthrough 120'],['CONTACTS201','201 Contacts'],['SMARTPLANS','SmartPlans Linked'],['FIC','FIC Training']];
+const items=[['RREA','RREA'],['INDUCTION','Induction'],['TECH1','Tech Training 1'],['TECH2','Tech Training 2'],['BT120','Breakthrough 120'],['CONTACTS201','201 Contacts'],['SMARTPLANS','SmartPlans Linked'],['FIC','FICA Training'],['COMMAND_CONTACTS','Contacts Added to Command']];
 const metrics=[['conversations','Conversations'],['appointments','Appointments'],['active_listings','Active Listings'],['show_houses','Show Houses'],['otps','Offers to Purchase'],['registrations','Registrations']];
 let state=null,token=localStorage.getItem('kw_accountability_token')||'';const $=id=>document.getElementById(id);
 async function api(action,payload={}){const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,token,...payload})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Request failed');return d}

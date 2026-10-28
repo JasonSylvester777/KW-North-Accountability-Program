@@ -14,16 +14,17 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:
 .hero h1{margin:0;font-size:30px}.hero p{margin:7px 0 0;color:#d1d5db}
 .card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);margin-top:18px;overflow:hidden}
 .head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.head h2{margin:0;font-size:19px}.body{padding:20px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:18px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:18px}
 .stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}.stat small{color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800}.stat strong{font-size:27px;display:block;margin-top:4px}
 .field label{display:block;font-size:12px;font-weight:700;color:#4b5563;margin-bottom:6px}.field input,.field select,.field textarea,td select{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:10px;font-size:13px;background:#fff}
 .btn{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer}.primary{background:var(--red);color:#fff}.secondary{background:#e5e7eb}.danger{background:#fee2e2;color:#991b1b}.hidden{display:none!important}
 .status{padding:11px 13px;border-radius:10px;margin-top:12px;font-weight:700;font-size:13px}.ok{background:#ecfdf3;color:var(--green)}.err{background:#fef2f2;color:#991b1b}
-.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:1750px}th{background:#111827;color:#fff;text-align:left;padding:11px;font-size:12px;position:sticky;top:0}td{padding:10px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:1620px}th{background:#111827;color:#fff;text-align:left;padding:11px;font-size:12px;position:sticky;top:0}td{padding:10px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top}
 .agent strong{font-size:13px}.pill{display:inline-flex;border-radius:999px;padding:5px 8px;background:#f3f4f6;font-weight:700;font-size:11px}.stage{background:#fee2e2;color:#991b1b}.good{background:#dcfce7;color:#166534}.warn{background:#fef3c7;color:#92400e}.muted{color:var(--muted)}.mini{font-size:11px;line-height:1.45}.score{white-space:nowrap}.attendance-select{min-width:118px}.row-actions{display:flex;gap:6px;flex-wrap:wrap}.row-actions .btn{padding:7px 9px;font-size:11px}
 .history{display:flex;flex-direction:column;gap:10px}.hist{border-left:3px solid var(--red);padding:7px 10px;background:#f9fafb;border-radius:8px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:99}.modal-box{background:#fff;border-radius:18px;max-width:720px;width:100%;max-height:90vh;overflow:auto}.modal-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}.modal-body{padding:18px}.manager-note{font-size:11px;color:var(--muted)}
-@media(max-width:1050px){.stats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:1200px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.wrap{padding:10px}.hero{align-items:flex-start}.hero img{width:64px;height:64px}.hero h1{font-size:22px}.stats,.grid{grid-template-columns:1fr 1fr}.head{align-items:flex-start}.stats .stat strong{font-size:22px}}
 @media(max-width:420px){.stats,.grid{grid-template-columns:1fr}}
 </style>
@@ -32,7 +33,7 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:
 <div class="wrap">
   <div class="hero">
     <img src="KW_LOGO-removebg-preview.png" alt="KW North">
-    <div><h1>KW North Accountability Admin</h1><p>Manage stages, attendance, weekly commitments, production, training and progression history.</p></div>
+    <div><h1>KW North Accountability Admin</h1><p>Manage stages, daily huddle attendance, weekly commitments, production, training and progression history.</p></div>
   </div>
 
   <div class="card" id="loginCard">
@@ -54,7 +55,7 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:
       <div class="stat"><small>Relaunch</small><strong id="sRelaunch">0</strong></div>
       <div class="stat"><small>Breakthrough</small><strong id="sBreakthrough">0</strong></div>
       <div class="stat"><small>Reported This Week</small><strong id="sReported">0</strong></div>
-      <div class="stat"><small>Left KW North</small><strong id="sLeft">0</strong></div>
+      <div class="stat"><small>Archived Agents</small><strong id="sLeft">0</strong></div>
     </div>
 
     <div class="card">
@@ -65,14 +66,15 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:
       <div class="body">
         <div class="grid" style="margin-bottom:14px">
           <div class="field"><label>Search Agent</label><input id="search" placeholder="Name or email"></div>
+          <div class="field"><label>Agent View</label><select id="viewFilter"><option value="current">Current Agents</option><option value="archive">Archive</option><option value="all">All Agents</option></select></div>
           <div class="field"><label>Stage</label><select id="stageFilter"><option value="">All stages</option><option>Foundation to Production</option><option>Productivity Relaunch</option><option>Productivity Breakthrough</option><option>Unassigned / Pending Assessment</option></select></div>
           <div class="field"><label>Status</label><select id="statusFilter"><option value="">All statuses</option><option>Active</option><option>On Leave</option><option>Inactive</option><option>Left KW North</option></select></div>
           <div class="field"><label>Week Start</label><input type="date" id="week"></div>
-          <div class="field"><label>Huddle Attendance Date</label><input type="date" id="attendanceDate"></div>
+          <div class="field"><label>Daily Huddle Attendance Date</label><input type="date" id="attendanceDate"></div>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Agent</th><th>Current Stage</th><th>Manager</th><th>Time in Stage</th><th>Status</th><th>Training Hub</th><th>Accountability Huddle</th><th>Motivation Huddle</th><th>Weekly Goal / Actual</th><th>Reporting</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Agent</th><th>Current Stage</th><th>Manager</th><th>Time in Stage</th><th>Status</th><th>Training Hub</th><th>Accountability & Motivation Huddle</th><th>Weekly Goal / Actual</th><th>Reporting</th><th>Actions</th></tr></thead>
             <tbody id="rows"></tbody>
           </table>
         </div>
@@ -130,10 +132,7 @@ async function load(){
     const a=await attApi('attendance_bootstrap',{attendance_date:$('attendanceDate').value});
     $('attendanceDate').value=a.attendance_date;
     attendance={};
-    for(const row of a.records||[]){
-      if(!attendance[row.agent_id])attendance[row.agent_id]={};
-      attendance[row.agent_id][row.activity_type]=row.status;
-    }
+    for(const row of a.records||[])attendance[row.agent_id]=row.status;
     $('loginCard').classList.add('hidden');
     $('app').classList.remove('hidden');
     render();
@@ -160,14 +159,14 @@ function reportStatus(a){
 function attendanceLabel(value){
   return value==='present'?'Attended':value==='absent'?'Absent':value==='excused'?'Excused':'Not marked';
 }
-function attendanceCell(a,type,canEdit){
+function attendanceCell(a,canEdit){
   if(a.agent_status==='Left KW North')return'<span class="muted">N/A</span>';
-  const value=attendance[a.id]?.[type]||'na';
+  const value=attendance[a.id]||'na';
   if(!canEdit){
     const cls=value==='present'?'good':value==='absent'?'stage':value==='excused'?'warn':'';
     return `<span class="pill ${cls}">${attendanceLabel(value)}</span>`;
   }
-  return `<select class="attendance-select" onchange="setAttendance('${a.id}','${type}',this.value,this)">${attendanceStatuses.map(([v,l])=>`<option value="${v}" ${v===value?'selected':''}>${l}</option>`).join('')}</select>`;
+  return `<select class="attendance-select" onchange="setAttendance('${a.id}',this.value,this)">${attendanceStatuses.map(([v,l])=>`<option value="${v}" ${v===value?'selected':''}>${l}</option>`).join('')}</select>`;
 }
 
 function render(){
@@ -176,29 +175,31 @@ function render(){
   $('who').textContent=`${data.user.name} • ${data.user.role}${data.user.teamKey?' • '+data.user.teamKey:''}`;
   const canEdit=['admin','executive'].includes(data.user.role);
   $('addAgentBtn').classList.toggle('hidden',!canEdit);
-  const q=$('search').value.toLowerCase(),sf=$('stageFilter').value,stf=$('statusFilter').value;
-  const list=data.agents.filter(a=>(!q||(a.full_name||'').toLowerCase().includes(q)||(a.email||'').toLowerCase().includes(q))&&(!sf||a.accountability_stage===sf)&&(!stf||a.agent_status===stf));
+  const q=$('search').value.toLowerCase(),vf=$('viewFilter').value,sf=$('stageFilter').value,stf=$('statusFilter').value;
+  const list=data.agents.filter(a=>{
+    const archived=a.agent_status==='Left KW North';
+    const viewMatch=vf==='archive'?archived:vf==='all'?true:!archived;
+    return viewMatch&&(!q||(a.full_name||'').toLowerCase().includes(q)||(a.email||'').toLowerCase().includes(q))&&(!sf||a.accountability_stage===sf)&&(!stf||a.agent_status===stf);
+  });
   $('rows').innerHTML=list.map(a=>`<tr>
     <td class="agent"><strong>${a.full_name}</strong><div class="muted">${a.email||''}</div></td>
-    <td>${canEdit?`<select onchange="changeStage('${a.id}',this.value)">${stages.map(x=>`<option ${x===a.accountability_stage?'selected':''}>${x}</option>`).join('')}</select>`:`<span class="pill stage">${a.accountability_stage}</span>`}</td>
+    <td>${canEdit&&a.agent_status!=='Left KW North'?`<select onchange="changeStage('${a.id}',this.value)">${stages.map(x=>`<option ${x===a.accountability_stage?'selected':''}>${x}</option>`).join('')}</select>`:`<span class="pill stage">${a.accountability_stage}</span>`}</td>
     <td>${manager(a.accountability_stage)}</td>
     <td><b>${days(a.stage_entry_date)}</b><div class="muted">Since ${fmt(a.stage_entry_date)}</div></td>
-    <td>${canEdit?`<select onchange="changeStatus('${a.id}',this.value,'${String(a.exit_reason||'').replace(/'/g,'&#39;')}')">${statuses.map(x=>`<option ${x===a.agent_status?'selected':''}>${x}</option>`).join('')}</select>`:a.agent_status}</td>
+    <td>${canEdit&&a.agent_status!=='Left KW North'?`<select onchange="changeStatus('${a.id}',this.value,'${String(a.exit_reason||'').replace(/'/g,'&#39;')}')">${statuses.filter(x=>x!=='Left KW North').map(x=>`<option ${x===a.agent_status?'selected':''}>${x}</option>`).join('')}</select>`:`<span class="pill ${a.agent_status==='Left KW North'?'warn':''}">${a.agent_status}</span>`}</td>
     <td><b>${a.training.passed}/${a.training.required}</b> (${a.training.percent}%)<div class="muted">${a.training.linked?'Live from Training Hub':'Not linked'}</div></td>
-    <td>${attendanceCell(a,'Accountability Huddle',canEdit)}</td>
-    <td>${attendanceCell(a,'Motivation Huddle',canEdit)}</td>
+    <td>${attendanceCell(a,canEdit)}</td>
     <td class="mini score">${metricsText(a)}</td>
     <td>${reportStatus(a)}</td>
-    <td><div class="row-actions"><button class="btn secondary" onclick="showHistory('${a.id}')">History</button><button class="btn secondary" onclick="showTraining('${a.id}')">Training</button>${canEdit&&a.agent_status!=='Left KW North'?`<button class="btn danger" onclick="archiveAgent('${a.id}')">Remove</button>`:''}${canEdit&&a.agent_status==='Left KW North'?`<button class="btn secondary" onclick="reactivate('${a.id}')">Reactivate</button>`:''}</div></td>
-  </tr>`).join('')||'<tr><td colspan="11">No agents match the current filters.</td></tr>';
+    <td><div class="row-actions"><button class="btn secondary" onclick="showHistory('${a.id}')">History</button><button class="btn secondary" onclick="showTraining('${a.id}')">Training</button>${canEdit&&a.agent_status!=='Left KW North'?`<button class="btn danger" onclick="archiveAgent('${a.id}')">Archive</button>`:''}${canEdit&&a.agent_status==='Left KW North'?`<button class="btn secondary" onclick="reactivate('${a.id}')">Reactivate</button>`:''}</div></td>
+  </tr>`).join('')||'<tr><td colspan="10">No agents match the current filters.</td></tr>';
 }
 
-async function setAttendance(id,type,value,el){
+async function setAttendance(id,value,el){
   el.disabled=true;
   try{
-    await attApi('set_attendance',{agent_id:id,attendance_date:$('attendanceDate').value,activity_type:type,status:value});
-    if(!attendance[id])attendance[id]={};
-    if(value==='na')delete attendance[id][type];else attendance[id][type]=value;
+    await attApi('set_attendance',{agent_id:id,attendance_date:$('attendanceDate').value,status:value});
+    if(value==='na')delete attendance[id];else attendance[id]=value;
   }catch(e){
     alert(e.message);
     await load();
@@ -216,22 +217,26 @@ async function saveNewAgent(){
   try{
     const r=await api('admin_onboarding_complete',{full_name:name,email});
     status('addStatus',r.created?'Agent added successfully.':'Agent already existed and has been reactivated.','ok');
-    setTimeout(async()=>{closeModal();await load()},700);
+    setTimeout(async()=>{closeModal();$('viewFilter').value='current';await load()},700);
   }catch(e){status('addStatus',e.message,'err')}
 }
 async function archiveAgent(id){
   const a=data.agents.find(x=>x.id===id);if(!a)return;
-  const reason=prompt(`Remove ${a.full_name} from active KW North agents?\n\nTheir historical goals, production, training and stage history will be kept.\n\nOptional reason:`,'');
+  const reason=prompt(`Archive ${a.full_name}?\n\nThey will be removed from the normal agent list but all historical goals, attendance, production, training and stage history will be kept.\n\nOptional reason:`,'');
   if(reason===null)return;
-  try{await api('admin_update_agent',{agent_id:id,status:'Left KW North',exit_reason:reason||'Removed by admin'});await load()}catch(e){alert(e.message)}
+  try{await api('admin_update_agent',{agent_id:id,status:'Left KW North',exit_reason:reason||'Archived by admin'});await load()}catch(e){alert(e.message)}
 }
 async function changeStage(id,value){try{await api('admin_update_agent',{agent_id:id,stage:value});await load()}catch(e){alert(e.message);await load()}}
 async function changeStatus(id,value,currentReason){
-  let reason=currentReason||'';
-  if(value==='Left KW North')reason=prompt('Optional exit reason:',reason)||reason;
-  try{await api('admin_update_agent',{agent_id:id,status:value,exit_reason:reason});await load()}catch(e){alert(e.message);await load()}
+  try{await api('admin_update_agent',{agent_id:id,status:value,exit_reason:currentReason||''});await load()}catch(e){alert(e.message);await load()}
 }
-async function reactivate(id){try{await api('admin_update_agent',{agent_id:id,status:'Active',exit_reason:''});await load()}catch(e){alert(e.message)}}
+async function reactivate(id){
+  try{
+    await api('admin_update_agent',{agent_id:id,status:'Active',exit_reason:''});
+    $('viewFilter').value='current';
+    await load();
+  }catch(e){alert(e.message)}
+}
 function showHistory(id){
   const a=data.agents.find(x=>x.id===id);$('modalTitle').textContent=`Stage History • ${a.full_name}`;
   const h=[...(a.stage_history||[])].sort((x,y)=>new Date(y.moved_at)-new Date(x.moved_at));
@@ -250,7 +255,7 @@ function closeModal(){$('modal').classList.add('hidden')}
 $('loginBtn').onclick=login;
 $('addAgentBtn').onclick=openAddAgent;
 $('logoutBtn').onclick=()=>{localStorage.removeItem('kw_accountability_admin');token='';location.reload()};
-['search','stageFilter','statusFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
+['search','viewFilter','stageFilter','statusFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
 $('week').addEventListener('change',load);
 $('attendanceDate').addEventListener('change',load);
 $('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});

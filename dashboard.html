@@ -1,23 +1,260 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>KW North Accountability Admin</title><style>
-:root{--red:#B40101;--black:#111827;--line:#e5e7eb;--bg:#f4f5f7;--green:#166534;--amber:#b45309;--muted:#6b7280;--shadow:0 12px 32px rgba(0,0,0,.08)}*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#1f2937}.wrap{max-width:1500px;margin:auto;padding:20px}.hero{background:linear-gradient(135deg,#111827,#1f2937);color:#fff;padding:24px;border-radius:24px;display:flex;gap:18px;align-items:center;box-shadow:var(--shadow)}.hero img{width:84px;height:84px;object-fit:contain;background:#fff;border-radius:18px;padding:8px}.hero h1{margin:0;font-size:30px}.hero p{margin:7px 0 0;color:#d1d5db}.card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);margin-top:18px;overflow:hidden}.head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.head h2{margin:0;font-size:19px}.body{padding:20px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}.stat small{color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800}.stat strong{font-size:27px;display:block;margin-top:4px}.field label{display:block;font-size:12px;font-weight:700;color:#4b5563;margin-bottom:6px}.field input,.field select,.field textarea,td select{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:10px;font-size:13px;background:#fff}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer}.primary{background:var(--red);color:#fff}.secondary{background:#e5e7eb}.danger{background:#fee2e2;color:#991b1b}.hidden{display:none!important}.status{padding:11px 13px;border-radius:10px;margin-top:12px;font-weight:700;font-size:13px}.ok{background:#ecfdf3;color:var(--green)}.err{background:#fef2f2;color:#991b1b}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:1450px}th{background:#111827;color:#fff;text-align:left;padding:11px;font-size:12px;position:sticky;top:0}td{padding:10px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top}.agent strong{font-size:13px}.pill{display:inline-flex;border-radius:999px;padding:5px 8px;background:#f3f4f6;font-weight:700;font-size:11px}.stage{background:#fee2e2;color:#991b1b}.good{background:#dcfce7;color:#166534}.warn{background:#fef3c7;color:#92400e}.muted{color:var(--muted)}.mini{font-size:11px;line-height:1.45}.score{white-space:nowrap}.row-actions{display:flex;gap:6px;flex-wrap:wrap}.row-actions .btn{padding:7px 9px;font-size:11px}.history{display:flex;flex-direction:column;gap:10px}.hist{border-left:3px solid var(--red);padding:7px 10px;background:#f9fafb;border-radius:8px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:99}.modal-box{background:#fff;border-radius:18px;max-width:720px;width:100%;max-height:90vh;overflow:auto}.modal-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}.modal-body{padding:18px}.manager-note{font-size:11px;color:var(--muted)}@media(max-width:1050px){.stats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.wrap{padding:10px}.hero{align-items:flex-start}.hero img{width:64px;height:64px}.hero h1{font-size:22px}.stats,.grid{grid-template-columns:1fr 1fr}.head{align-items:flex-start}.stats .stat strong{font-size:22px}}@media(max-width:420px){.stats,.grid{grid-template-columns:1fr}}
-</style></head><body><div class="wrap">
-<div class="hero"><img src="KW_LOGO-removebg-preview.png"><div><h1>KW North Accountability Admin</h1><p>Manage stages, review weekly commitments, track production, training and progression history.</p></div></div>
-<div class="card" id="loginCard"><div class="head"><h2>Leadership Login</h2></div><div class="body"><div class="grid" style="grid-template-columns:1fr 1fr auto"><div class="field"><label>Email</label><input id="email" type="email"></div><div class="field"><label>Password</label><input id="password" type="password"></div><button class="btn primary" id="loginBtn" style="align-self:end">Sign In</button></div><div id="loginStatus"></div></div></div>
-<div id="app" class="hidden"><div class="stats"><div class="stat"><small>Active Agents</small><strong id="sActive">0</strong></div><div class="stat"><small>Foundation</small><strong id="sFoundation">0</strong></div><div class="stat"><small>Relaunch</small><strong id="sRelaunch">0</strong></div><div class="stat"><small>Breakthrough</small><strong id="sBreakthrough">0</strong></div><div class="stat"><small>Reported This Week</small><strong id="sReported">0</strong></div><div class="stat"><small>Left KW North</small><strong id="sLeft">0</strong></div></div>
-<div class="card"><div class="head"><div><h2>Agent Management</h2><div class="manager-note" id="who"></div></div><div style="display:flex;gap:8px"><button class="btn primary hidden" id="addAgentBtn">+ Add Agent</button><button class="btn secondary" id="logoutBtn">Logout</button></div></div><div class="body"><div class="grid" style="margin-bottom:14px"><div class="field"><label>Search Agent</label><input id="search" placeholder="Name or email"></div><div class="field"><label>Stage</label><select id="stageFilter"><option value="">All stages</option><option>Foundation to Production</option><option>Productivity Relaunch</option><option>Productivity Breakthrough</option><option>Unassigned / Pending Assessment</option></select></div><div class="field"><label>Status</label><select id="statusFilter"><option value="">All statuses</option><option>Active</option><option>On Leave</option><option>Inactive</option><option>Left KW North</option></select></div><div class="field"><label>Week Start</label><input type="date" id="week"></div></div><div class="table-wrap"><table><thead><tr><th>Agent</th><th>Current Stage</th><th>Manager</th><th>Time in Stage</th><th>Status</th><th>Training Hub</th><th>Weekly Goal / Actual</th><th>Reporting</th><th>Actions</th></tr></thead><tbody id="rows"></tbody></table></div></div></div></div><div style="text-align:center;color:#6b7280;font-size:12px;padding:18px">KW North • Accountability & Production</div></div>
-<div id="modal" class="modal hidden"><div class="modal-box"><div class="modal-head"><h2 id="modalTitle" style="margin:0;font-size:18px"></h2><button class="btn secondary" onclick="closeModal()">Close</button></div><div class="modal-body" id="modalBody"></div></div></div>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KW North Accountability Admin</title>
+<style>
+:root{--red:#B40101;--black:#111827;--line:#e5e7eb;--bg:#f4f5f7;--green:#166534;--amber:#b45309;--muted:#6b7280;--shadow:0 12px 32px rgba(0,0,0,.08)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#1f2937}
+.wrap{max-width:1700px;margin:auto;padding:20px}
+.hero{background:linear-gradient(135deg,#111827,#1f2937);color:#fff;padding:24px;border-radius:24px;display:flex;gap:18px;align-items:center;box-shadow:var(--shadow)}
+.hero img{width:84px;height:84px;object-fit:contain;background:#fff;border-radius:18px;padding:8px}
+.hero h1{margin:0;font-size:30px}.hero p{margin:7px 0 0;color:#d1d5db}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);margin-top:18px;overflow:hidden}
+.head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.head h2{margin:0;font-size:19px}.body{padding:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:18px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}.stat small{color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800}.stat strong{font-size:27px;display:block;margin-top:4px}
+.field label{display:block;font-size:12px;font-weight:700;color:#4b5563;margin-bottom:6px}.field input,.field select,.field textarea,td select{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:10px;font-size:13px;background:#fff}
+.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer}.primary{background:var(--red);color:#fff}.secondary{background:#e5e7eb}.danger{background:#fee2e2;color:#991b1b}.hidden{display:none!important}
+.status{padding:11px 13px;border-radius:10px;margin-top:12px;font-weight:700;font-size:13px}.ok{background:#ecfdf3;color:var(--green)}.err{background:#fef2f2;color:#991b1b}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:1750px}th{background:#111827;color:#fff;text-align:left;padding:11px;font-size:12px;position:sticky;top:0}td{padding:10px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top}
+.agent strong{font-size:13px}.pill{display:inline-flex;border-radius:999px;padding:5px 8px;background:#f3f4f6;font-weight:700;font-size:11px}.stage{background:#fee2e2;color:#991b1b}.good{background:#dcfce7;color:#166534}.warn{background:#fef3c7;color:#92400e}.muted{color:var(--muted)}.mini{font-size:11px;line-height:1.45}.score{white-space:nowrap}.attendance-select{min-width:118px}.row-actions{display:flex;gap:6px;flex-wrap:wrap}.row-actions .btn{padding:7px 9px;font-size:11px}
+.history{display:flex;flex-direction:column;gap:10px}.hist{border-left:3px solid var(--red);padding:7px 10px;background:#f9fafb;border-radius:8px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:99}.modal-box{background:#fff;border-radius:18px;max-width:720px;width:100%;max-height:90vh;overflow:auto}.modal-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}.modal-body{padding:18px}.manager-note{font-size:11px;color:var(--muted)}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.wrap{padding:10px}.hero{align-items:flex-start}.hero img{width:64px;height:64px}.hero h1{font-size:22px}.stats,.grid{grid-template-columns:1fr 1fr}.head{align-items:flex-start}.stats .stat strong{font-size:22px}}
+@media(max-width:420px){.stats,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <img src="KW_LOGO-removebg-preview.png" alt="KW North">
+    <div><h1>KW North Accountability Admin</h1><p>Manage stages, attendance, weekly commitments, production, training and progression history.</p></div>
+  </div>
+
+  <div class="card" id="loginCard">
+    <div class="head"><h2>Leadership Login</h2></div>
+    <div class="body">
+      <div class="grid" style="grid-template-columns:1fr 1fr auto">
+        <div class="field"><label>Email</label><input id="email" type="email"></div>
+        <div class="field"><label>Password</label><input id="password" type="password"></div>
+        <button class="btn primary" id="loginBtn" style="align-self:end">Sign In</button>
+      </div>
+      <div id="loginStatus"></div>
+    </div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="stats">
+      <div class="stat"><small>Active Agents</small><strong id="sActive">0</strong></div>
+      <div class="stat"><small>Foundation</small><strong id="sFoundation">0</strong></div>
+      <div class="stat"><small>Relaunch</small><strong id="sRelaunch">0</strong></div>
+      <div class="stat"><small>Breakthrough</small><strong id="sBreakthrough">0</strong></div>
+      <div class="stat"><small>Reported This Week</small><strong id="sReported">0</strong></div>
+      <div class="stat"><small>Left KW North</small><strong id="sLeft">0</strong></div>
+    </div>
+
+    <div class="card">
+      <div class="head">
+        <div><h2>Agent Management</h2><div class="manager-note" id="who"></div></div>
+        <div style="display:flex;gap:8px"><button class="btn primary hidden" id="addAgentBtn">+ Add Agent</button><button class="btn secondary" id="logoutBtn">Logout</button></div>
+      </div>
+      <div class="body">
+        <div class="grid" style="margin-bottom:14px">
+          <div class="field"><label>Search Agent</label><input id="search" placeholder="Name or email"></div>
+          <div class="field"><label>Stage</label><select id="stageFilter"><option value="">All stages</option><option>Foundation to Production</option><option>Productivity Relaunch</option><option>Productivity Breakthrough</option><option>Unassigned / Pending Assessment</option></select></div>
+          <div class="field"><label>Status</label><select id="statusFilter"><option value="">All statuses</option><option>Active</option><option>On Leave</option><option>Inactive</option><option>Left KW North</option></select></div>
+          <div class="field"><label>Week Start</label><input type="date" id="week"></div>
+          <div class="field"><label>Huddle Attendance Date</label><input type="date" id="attendanceDate"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Agent</th><th>Current Stage</th><th>Manager</th><th>Time in Stage</th><th>Status</th><th>Training Hub</th><th>Accountability Huddle</th><th>Motivation Huddle</th><th>Weekly Goal / Actual</th><th>Reporting</th><th>Actions</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;color:#6b7280;font-size:12px;padding:18px">KW North • Accountability & Production</div>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-head"><h2 id="modalTitle" style="margin:0;font-size:18px"></h2><button class="btn secondary" onclick="closeModal()">Close</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
 <script>
-const API='https://fdbsqjtwbucjhjgphhyh.supabase.co/functions/v1/accountability-api';let token=localStorage.getItem('kw_accountability_admin')||'',data=null;const $=id=>document.getElementById(id);const stages=['Foundation to Production','Productivity Relaunch','Productivity Breakthrough','Unassigned / Pending Assessment'];const statuses=['Active','On Leave','Inactive','Left KW North'];const manager=s=>s==='Foundation to Production'?'Dide':s==='Productivity Relaunch'?'Jason':s==='Productivity Breakthrough'?'Leonie / Karien':'Admin';
-async function api(action,p={}){const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,token,...p})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Request failed');return d}function status(id,msg,type){$(id).innerHTML=msg?`<div class="status ${type}">${msg}</div>`:''}function fmt(d){if(!d)return'—';return new Date(d.length===10?d+'T12:00:00':d).toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'})}function days(d){if(!d)return'—';return Math.max(0,Math.floor((Date.now()-new Date(d+'T12:00:00').getTime())/86400000))+' days'}
-async function login(){try{const d=await api('admin_login',{email:$('email').value.trim(),password:$('password').value});token=d.token;localStorage.setItem('kw_accountability_admin',token);await load()}catch(e){status('loginStatus',e.message,'err')}}async function load(){try{data=await api('admin_bootstrap',{week_start:$('week').value||undefined});$('loginCard').classList.add('hidden');$('app').classList.remove('hidden');$('week').value=data.period.week_start;render()}catch(e){localStorage.removeItem('kw_accountability_admin');token='';$('loginCard').classList.remove('hidden');$('app').classList.add('hidden');if(e.message)status('loginStatus',e.message,'err')}}
-function metricsText(a){const g=a.weekly_goals,u=a.latest_update;if(!g)return'<span class="pill warn">Goals not set</span>';const pairs=[['conversations','C'],['appointments','A'],['active_listings','L'],['show_houses','SH'],['otps','OTP'],['registrations','R'],['command_contacts','CMD']];return pairs.map(([k,l])=>`${l}: <b>${u?.[k+'_actual']||0}</b>/${g[k+'_goal']||0}`).join('<br>')}function reportStatus(a){if(!a.weekly_goals)return'<span class="pill warn">No Monday Goals</span>';if(!a.latest_update)return'<span class="pill warn">No Actuals Yet</span>';return `<span class="pill good">Updated ${fmt(a.latest_update.report_date)}</span>`}
-function render(){const s=data.summary;$('sActive').textContent=s.active;$('sFoundation').textContent=s.foundation;$('sRelaunch').textContent=s.relaunch;$('sBreakthrough').textContent=s.breakthrough;$('sReported').textContent=s.reported;$('sLeft').textContent=s.left;$('who').textContent=`${data.user.name} • ${data.user.role}${data.user.teamKey?' • '+data.user.teamKey:''}`;const canEdit=['admin','executive'].includes(data.user.role);$('addAgentBtn').classList.toggle('hidden',!canEdit);const q=$('search').value.toLowerCase(),sf=$('stageFilter').value,stf=$('statusFilter').value;const list=data.agents.filter(a=>(!q||(a.full_name||'').toLowerCase().includes(q)||(a.email||'').toLowerCase().includes(q))&&(!sf||a.accountability_stage===sf)&&(!stf||a.agent_status===stf));$('rows').innerHTML=list.map(a=>`<tr><td class="agent"><strong>${a.full_name}</strong><div class="muted">${a.email||''}</div></td><td>${canEdit?`<select onchange="changeStage('${a.id}',this.value)">${stages.map(x=>`<option ${x===a.accountability_stage?'selected':''}>${x}</option>`).join('')}</select>`:`<span class="pill stage">${a.accountability_stage}</span>`}</td><td>${manager(a.accountability_stage)}</td><td><b>${days(a.stage_entry_date)}</b><div class="muted">Since ${fmt(a.stage_entry_date)}</div></td><td>${canEdit?`<select onchange="changeStatus('${a.id}',this.value,'${String(a.exit_reason||'').replace(/'/g,'&#39;')}')">${statuses.map(x=>`<option ${x===a.agent_status?'selected':''}>${x}</option>`).join('')}</select>`:a.agent_status}</td><td><b>${a.training.passed}/${a.training.required}</b> (${a.training.percent}%)<div class="muted">${a.training.linked?'Live from Training Hub':'Not linked'}</div></td><td class="mini score">${metricsText(a)}</td><td>${reportStatus(a)}</td><td><div class="row-actions"><button class="btn secondary" onclick="showHistory('${a.id}')">History</button><button class="btn secondary" onclick="showTraining('${a.id}')">Training</button>${canEdit&&a.agent_status!=='Left KW North'?`<button class="btn danger" onclick="archiveAgent('${a.id}')">Remove</button>`:''}${canEdit&&a.agent_status==='Left KW North'?`<button class="btn secondary" onclick="reactivate('${a.id}')">Reactivate</button>`:''}</div></td></tr>`).join('')||'<tr><td colspan="9">No agents match the current filters.</td></tr>'}
-function openAddAgent(){$('modalTitle').textContent='Add Agent';$('modalBody').innerHTML=`<div class="note" style="margin-bottom:14px">Add an agent who is not yet in the Accountability Program. New agents will start in Foundation to Production and can be moved afterward if needed.</div><div class="field"><label>Name and Surname</label><input id="newName" placeholder="e.g. Jane Smith"></div><div class="field" style="margin-top:12px"><label>Email Address</label><input id="newEmail" type="email" placeholder="agent@kwsa.co.za"></div><div id="addStatus"></div><div class="actions" style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn primary" onclick="saveNewAgent()">Add Agent</button></div>`;$('modal').classList.remove('hidden')}
-async function saveNewAgent(){const name=$('newName').value.trim(),email=$('newEmail').value.trim();if(!name||!email){status('addStatus','Name and email are required.','err');return}try{const r=await api('admin_onboarding_complete',{full_name:name,email});status('addStatus',r.created?'Agent added successfully.':'Agent already existed and has been reactivated.','ok');setTimeout(async()=>{closeModal();await load()},700)}catch(e){status('addStatus',e.message,'err')}}
-async function archiveAgent(id){const a=data.agents.find(x=>x.id===id);if(!a)return;const reason=prompt(`Remove ${a.full_name} from active KW North agents?\n\nTheir historical goals, production, training and stage history will be kept.\n\nOptional reason:`,'');if(reason===null)return;try{await api('admin_update_agent',{agent_id:id,status:'Left KW North',exit_reason:reason||'Removed by admin'});await load()}catch(e){alert(e.message)}}
-async function changeStage(id,value){try{await api('admin_update_agent',{agent_id:id,stage:value});await load()}catch(e){alert(e.message);await load()}}async function changeStatus(id,value,currentReason){let reason=currentReason||'';if(value==='Left KW North')reason=prompt('Optional exit reason:',reason)||reason;try{await api('admin_update_agent',{agent_id:id,status:value,exit_reason:reason});await load()}catch(e){alert(e.message);await load()}}async function reactivate(id){try{await api('admin_update_agent',{agent_id:id,status:'Active',exit_reason:''});await load()}catch(e){alert(e.message)}}
-function showHistory(id){const a=data.agents.find(x=>x.id===id);$('modalTitle').textContent=`Stage History • ${a.full_name}`;const h=[...(a.stage_history||[])].sort((x,y)=>new Date(y.moved_at)-new Date(x.moved_at));$('modalBody').innerHTML=`<div class="history">${h.map(x=>`<div class="hist"><strong>${x.from_stage||'New Agent'} → ${x.to_stage}</strong><div class="muted">${fmt(x.moved_at)} • ${x.source||''}</div>${x.reason?`<div>${x.reason}</div>`:''}</div>`).join('')||'No history recorded.'}</div>`;$('modal').classList.remove('hidden')}
-function showTraining(id){const a=data.agents.find(x=>x.id===id);$('modalTitle').textContent=`Training • ${a.full_name}`;const auto=a.training.sessions.map(x=>`<div style="padding:8px;border-bottom:1px solid #eee"><b>${x.title}</b> — ${x.passed?'✅ Complete':'⬜ Outstanding'}</div>`).join('');const manual=(a.manual_training||[]).map(x=>`<div style="padding:8px;border-bottom:1px solid #eee"><b>${x.item_label}</b> — ${x.status}${x.completed_at?' • '+fmt(x.completed_at):''}</div>`).join('');$('modalBody').innerHTML=`<h3>Training Hub (Automatic)</h3>${auto||'<div class="muted">No linked Training Hub profile.</div>'}<h3 style="margin-top:18px">Other Training & Setup</h3>${manual||'<div class="muted">No manual statuses captured yet.</div>'}`;$('modal').classList.remove('hidden')}
-function closeModal(){$('modal').classList.add('hidden')}$('loginBtn').onclick=login;$('addAgentBtn').onclick=openAddAgent;$('logoutBtn').onclick=()=>{localStorage.removeItem('kw_accountability_admin');token='';location.reload()};['search','stageFilter','statusFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));$('week').addEventListener('change',load);$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});if(token)load();
-</script></body></html>
+const API='https://fdbsqjtwbucjhjgphhyh.supabase.co/functions/v1/accountability-api';
+const ATT_API='https://fdbsqjtwbucjhjgphhyh.supabase.co/functions/v1/accountability-attendance-api';
+let token=localStorage.getItem('kw_accountability_admin')||'';
+let data=null;
+let attendance={};
+const $=id=>document.getElementById(id);
+const stages=['Foundation to Production','Productivity Relaunch','Productivity Breakthrough','Unassigned / Pending Assessment'];
+const statuses=['Active','On Leave','Inactive','Left KW North'];
+const attendanceStatuses=[['na','Not marked'],['present','Attended'],['absent','Absent'],['excused','Excused']];
+const manager=s=>s==='Foundation to Production'?'Dide':s==='Productivity Relaunch'?'Jason':s==='Productivity Breakthrough'?'Leonie / Karien':'Admin';
+
+async function request(url,action,p={}){
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,token,...p})});
+  const d=await r.json();
+  if(!r.ok)throw new Error(d.error||'Request failed');
+  return d;
+}
+const api=(action,p={})=>request(API,action,p);
+const attApi=(action,p={})=>request(ATT_API,action,p);
+function status(id,msg,type){$(id).innerHTML=msg?`<div class="status ${type}">${msg}</div>`:''}
+function fmt(d){if(!d)return'—';return new Date(d.length===10?d+'T12:00:00':d).toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'})}
+function days(d){if(!d)return'—';return Math.max(0,Math.floor((Date.now()-new Date(d+'T12:00:00').getTime())/86400000))+' days'}
+
+async function login(){
+  try{
+    const d=await api('admin_login',{email:$('email').value.trim(),password:$('password').value});
+    token=d.token;
+    localStorage.setItem('kw_accountability_admin',token);
+    await load();
+  }catch(e){status('loginStatus',e.message,'err')}
+}
+
+async function load(){
+  try{
+    data=await api('admin_bootstrap',{week_start:$('week').value||undefined});
+    $('week').value=data.period.week_start;
+    if(!$('attendanceDate').value)$('attendanceDate').value=data.period.today;
+    const a=await attApi('attendance_bootstrap',{attendance_date:$('attendanceDate').value});
+    $('attendanceDate').value=a.attendance_date;
+    attendance={};
+    for(const row of a.records||[]){
+      if(!attendance[row.agent_id])attendance[row.agent_id]={};
+      attendance[row.agent_id][row.activity_type]=row.status;
+    }
+    $('loginCard').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    render();
+  }catch(e){
+    localStorage.removeItem('kw_accountability_admin');
+    token='';
+    $('loginCard').classList.remove('hidden');
+    $('app').classList.add('hidden');
+    if(e.message)status('loginStatus',e.message,'err');
+  }
+}
+
+function metricsText(a){
+  const g=a.weekly_goals,u=a.latest_update;
+  if(!g)return'<span class="pill warn">Goals not set</span>';
+  const pairs=[['conversations','C'],['appointments','A'],['active_listings','L'],['show_houses','SH'],['otps','OTP'],['registrations','R'],['command_contacts','CMD']];
+  return pairs.map(([k,l])=>`${l}: <b>${u?.[k+'_actual']||0}</b>/${g[k+'_goal']||0}`).join('<br>');
+}
+function reportStatus(a){
+  if(!a.weekly_goals)return'<span class="pill warn">No Monday Goals</span>';
+  if(!a.latest_update)return'<span class="pill warn">No Actuals Yet</span>';
+  return `<span class="pill good">Updated ${fmt(a.latest_update.report_date)}</span>`;
+}
+function attendanceLabel(value){
+  return value==='present'?'Attended':value==='absent'?'Absent':value==='excused'?'Excused':'Not marked';
+}
+function attendanceCell(a,type,canEdit){
+  if(a.agent_status==='Left KW North')return'<span class="muted">N/A</span>';
+  const value=attendance[a.id]?.[type]||'na';
+  if(!canEdit){
+    const cls=value==='present'?'good':value==='absent'?'stage':value==='excused'?'warn':'';
+    return `<span class="pill ${cls}">${attendanceLabel(value)}</span>`;
+  }
+  return `<select class="attendance-select" onchange="setAttendance('${a.id}','${type}',this.value,this)">${attendanceStatuses.map(([v,l])=>`<option value="${v}" ${v===value?'selected':''}>${l}</option>`).join('')}</select>`;
+}
+
+function render(){
+  const s=data.summary;
+  $('sActive').textContent=s.active;$('sFoundation').textContent=s.foundation;$('sRelaunch').textContent=s.relaunch;$('sBreakthrough').textContent=s.breakthrough;$('sReported').textContent=s.reported;$('sLeft').textContent=s.left;
+  $('who').textContent=`${data.user.name} • ${data.user.role}${data.user.teamKey?' • '+data.user.teamKey:''}`;
+  const canEdit=['admin','executive'].includes(data.user.role);
+  $('addAgentBtn').classList.toggle('hidden',!canEdit);
+  const q=$('search').value.toLowerCase(),sf=$('stageFilter').value,stf=$('statusFilter').value;
+  const list=data.agents.filter(a=>(!q||(a.full_name||'').toLowerCase().includes(q)||(a.email||'').toLowerCase().includes(q))&&(!sf||a.accountability_stage===sf)&&(!stf||a.agent_status===stf));
+  $('rows').innerHTML=list.map(a=>`<tr>
+    <td class="agent"><strong>${a.full_name}</strong><div class="muted">${a.email||''}</div></td>
+    <td>${canEdit?`<select onchange="changeStage('${a.id}',this.value)">${stages.map(x=>`<option ${x===a.accountability_stage?'selected':''}>${x}</option>`).join('')}</select>`:`<span class="pill stage">${a.accountability_stage}</span>`}</td>
+    <td>${manager(a.accountability_stage)}</td>
+    <td><b>${days(a.stage_entry_date)}</b><div class="muted">Since ${fmt(a.stage_entry_date)}</div></td>
+    <td>${canEdit?`<select onchange="changeStatus('${a.id}',this.value,'${String(a.exit_reason||'').replace(/'/g,'&#39;')}')">${statuses.map(x=>`<option ${x===a.agent_status?'selected':''}>${x}</option>`).join('')}</select>`:a.agent_status}</td>
+    <td><b>${a.training.passed}/${a.training.required}</b> (${a.training.percent}%)<div class="muted">${a.training.linked?'Live from Training Hub':'Not linked'}</div></td>
+    <td>${attendanceCell(a,'Accountability Huddle',canEdit)}</td>
+    <td>${attendanceCell(a,'Motivation Huddle',canEdit)}</td>
+    <td class="mini score">${metricsText(a)}</td>
+    <td>${reportStatus(a)}</td>
+    <td><div class="row-actions"><button class="btn secondary" onclick="showHistory('${a.id}')">History</button><button class="btn secondary" onclick="showTraining('${a.id}')">Training</button>${canEdit&&a.agent_status!=='Left KW North'?`<button class="btn danger" onclick="archiveAgent('${a.id}')">Remove</button>`:''}${canEdit&&a.agent_status==='Left KW North'?`<button class="btn secondary" onclick="reactivate('${a.id}')">Reactivate</button>`:''}</div></td>
+  </tr>`).join('')||'<tr><td colspan="11">No agents match the current filters.</td></tr>';
+}
+
+async function setAttendance(id,type,value,el){
+  el.disabled=true;
+  try{
+    await attApi('set_attendance',{agent_id:id,attendance_date:$('attendanceDate').value,activity_type:type,status:value});
+    if(!attendance[id])attendance[id]={};
+    if(value==='na')delete attendance[id][type];else attendance[id][type]=value;
+  }catch(e){
+    alert(e.message);
+    await load();
+  }finally{el.disabled=false}
+}
+
+function openAddAgent(){
+  $('modalTitle').textContent='Add Agent';
+  $('modalBody').innerHTML=`<div class="note" style="margin-bottom:14px">Add an agent who is not yet in the Accountability Program. New agents will start in Foundation to Production and can be moved afterward if needed.</div><div class="field"><label>Name and Surname</label><input id="newName" placeholder="e.g. Jane Smith"></div><div class="field" style="margin-top:12px"><label>Email Address</label><input id="newEmail" type="email" placeholder="agent@kwsa.co.za"></div><div id="addStatus"></div><div class="actions" style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn primary" onclick="saveNewAgent()">Add Agent</button></div>`;
+  $('modal').classList.remove('hidden');
+}
+async function saveNewAgent(){
+  const name=$('newName').value.trim(),email=$('newEmail').value.trim();
+  if(!name||!email){status('addStatus','Name and email are required.','err');return}
+  try{
+    const r=await api('admin_onboarding_complete',{full_name:name,email});
+    status('addStatus',r.created?'Agent added successfully.':'Agent already existed and has been reactivated.','ok');
+    setTimeout(async()=>{closeModal();await load()},700);
+  }catch(e){status('addStatus',e.message,'err')}
+}
+async function archiveAgent(id){
+  const a=data.agents.find(x=>x.id===id);if(!a)return;
+  const reason=prompt(`Remove ${a.full_name} from active KW North agents?\n\nTheir historical goals, production, training and stage history will be kept.\n\nOptional reason:`,'');
+  if(reason===null)return;
+  try{await api('admin_update_agent',{agent_id:id,status:'Left KW North',exit_reason:reason||'Removed by admin'});await load()}catch(e){alert(e.message)}
+}
+async function changeStage(id,value){try{await api('admin_update_agent',{agent_id:id,stage:value});await load()}catch(e){alert(e.message);await load()}}
+async function changeStatus(id,value,currentReason){
+  let reason=currentReason||'';
+  if(value==='Left KW North')reason=prompt('Optional exit reason:',reason)||reason;
+  try{await api('admin_update_agent',{agent_id:id,status:value,exit_reason:reason});await load()}catch(e){alert(e.message);await load()}
+}
+async function reactivate(id){try{await api('admin_update_agent',{agent_id:id,status:'Active',exit_reason:''});await load()}catch(e){alert(e.message)}}
+function showHistory(id){
+  const a=data.agents.find(x=>x.id===id);$('modalTitle').textContent=`Stage History • ${a.full_name}`;
+  const h=[...(a.stage_history||[])].sort((x,y)=>new Date(y.moved_at)-new Date(x.moved_at));
+  $('modalBody').innerHTML=`<div class="history">${h.map(x=>`<div class="hist"><strong>${x.from_stage||'New Agent'} → ${x.to_stage}</strong><div class="muted">${fmt(x.moved_at)} • ${x.source||''}</div>${x.reason?`<div>${x.reason}</div>`:''}</div>`).join('')||'No history recorded.'}</div>`;
+  $('modal').classList.remove('hidden');
+}
+function showTraining(id){
+  const a=data.agents.find(x=>x.id===id);$('modalTitle').textContent=`Training • ${a.full_name}`;
+  const auto=a.training.sessions.map(x=>`<div style="padding:8px;border-bottom:1px solid #eee"><b>${x.title}</b> — ${x.passed?'✅ Complete':'⬜ Outstanding'}</div>`).join('');
+  const manual=(a.manual_training||[]).map(x=>`<div style="padding:8px;border-bottom:1px solid #eee"><b>${x.item_label}</b> — ${x.status}${x.completed_at?' • '+fmt(x.completed_at):''}</div>`).join('');
+  $('modalBody').innerHTML=`<h3>Training Hub (Automatic)</h3>${auto||'<div class="muted">No linked Training Hub profile.</div>'}<h3 style="margin-top:18px">Other Training & Setup</h3>${manual||'<div class="muted">No manual statuses captured yet.</div>'}`;
+  $('modal').classList.remove('hidden');
+}
+function closeModal(){$('modal').classList.add('hidden')}
+
+$('loginBtn').onclick=login;
+$('addAgentBtn').onclick=openAddAgent;
+$('logoutBtn').onclick=()=>{localStorage.removeItem('kw_accountability_admin');token='';location.reload()};
+['search','stageFilter','statusFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
+$('week').addEventListener('change',load);
+$('attendanceDate').addEventListener('change',load);
+$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+if(token)load();
+</script>
+</body>
+</html>
